@@ -48,9 +48,9 @@ public class JWTUtil {
         return JWT.require(Algorithm.HMAC256(key)).build().verify(token);
     }
 
-    public static String getTokenWithPayLoad(String SDUId, int expireTime, String key) throws UnsupportedEncodingException {
+    public static String getTokenWithPayLoad(String accountId, int expireTime, String key) throws UnsupportedEncodingException {
         Map<String, String> map = new HashMap<>();
-        map.put("user_id", SDUId);
+        map.put("user_id", accountId);
         return JWTUtil.getToken(map, expireTime, key);
     }
 

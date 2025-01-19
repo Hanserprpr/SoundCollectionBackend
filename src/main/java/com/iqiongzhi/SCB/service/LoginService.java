@@ -1,6 +1,6 @@
 package com.iqiongzhi.SCB.service;
 
-import com.iqiongzhi.SCB.data.po.LoginDTO;
+import com.iqiongzhi.SCB.data.dto.LoginDTO;
 import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.mapper.UserMapper;
@@ -28,6 +28,13 @@ import static com.iqiongzhi.SCB.utils.JWTUtil.REFRESH_SECRET_KEY;
 public class LoginService {
     @Autowired
     UserMapper userMapper;
+
+    /**
+     * 山东大学统一认证登录
+     * @param SDUId 学号
+     * @param password 密码
+     * @return Result
+     */
     public Result SDUIdentify(String SDUId, String password) {
         String baseURL = "https://pass.sdu.edu.cn/";
         String ticket, sTicket, validationResult;
@@ -61,19 +68,9 @@ public class LoginService {
             userMapper.addUser(username,password,SDUId);
         }
 
-        try{
-            String refreshToken = JWTUtil.getTokenWithPayLoad(SDUId,JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
+        String id = Integer.toString(userMapper.getUserId(SDUId));
 
-            String token = JWTUtil.getTokenWithPayLoad( SDUId, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
-
-            Map<String, String> map = new HashMap<>();
-            map.put("accessToken", token);
-            map.put("refreshToken", refreshToken);
-            System.out.println("app login succeed");
-            return Result.success(map, "登陆成功");
-        } catch (Exception e){
-            return Result.error(400, e.getMessage());
-        }
+        return getToken(id);
     }
 
     private boolean isExisted(String stuId){
@@ -90,6 +87,11 @@ public class LoginService {
     private final static String appSecret = Env.appSecret;
     private final static String LOGIN_URL = "https://api.weixin.qq.com/sns/jscode2session";
 
+    /**
+     * 微信登录
+     * @param code 微信小程序登录凭证
+     * @return Result
+     */
     public Result appWxLogin(String code) {
         String url = LOGIN_URL + "?appid=" + appId + "&secret=" + appSecret +
                 "&js_code=" + code + "&grant_type=authorization_code";
@@ -118,33 +120,27 @@ public class LoginService {
             userMapper.addWXUser(loginDTO.openid);
         }
         String user_id = loginDTO.openid;
-        try{
-            String refreshToken = JWTUtil.getTokenWithPayLoadWX( user_id,JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
+        String id = Integer.toString(userMapper.getUserId(user_id));
 
-            String token = JWTUtil.getTokenWithPayLoadWX(user_id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
-
-            Map<String, String> tokenMap = new HashMap<>();
-            tokenMap.put("accessToken", token);
-            tokenMap.put("refreshToken", refreshToken);
-
-            return Result.success(tokenMap, "登陆成功");
-        } catch (Exception e){
-            return Result.error(400, e.getMessage());
-        }
+        return getToken(id);
 
 
 //        后续开发的注意事项,此处的openid是所有微信用户唯一的
 //        可以在数据库中独立出微信用户的表,并用openid进行索引和查找
     }
 
+    /**
+     * 刷新token
+     * @param refreshToken 刷新用token
+     * @return Result
+     */
     public Result refresh(String refreshToken) {
         try {
-            System.out.println("start");
             DecodedJWT info = JWTUtil.getTokenInfo(refreshToken, REFRESH_SECRET_KEY);
-            String SDUId = info.getClaim("user_id").asString();
+            String id = info.getClaim("user_id").asString();
             Date date = info.getExpiresAt();
             if (date.after(new Date())) {
-                String newAccessToken = JWTUtil.getTokenWithPayLoad(SDUId, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
+                String newAccessToken = JWTUtil.getTokenWithPayLoad(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
                 Map<String, String> map = new HashMap<>();
                 map.put("accessToken", newAccessToken);
                 String msg;
@@ -157,5 +153,39 @@ public class LoginService {
         return Result.error(400, "无有效RefreshToken");
     }
 
+    /**
+     * 简单的用户名密码登录
+     * @param identifier 用户名或邮箱
+     * @param password 密码
+     * @return Result
+     */
+    public Result simpleLogin(String identifier, String password) {
+        if (userMapper.getPasswd(identifier).equals(password)) {
+            String id = Integer.toString(userMapper.getUserId(identifier));
+            return getToken(id);
+        } else {
+            return Result.error(401, "账号或密码错误");
+        }
+    }
 
+    /**
+     * 获取token
+     * @param id 用户id
+     * @return Result
+     */
+    private Result getToken(String id) {
+        try{
+            String refreshToken = JWTUtil.getTokenWithPayLoadWX(id,JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
+
+            String token = JWTUtil.getTokenWithPayLoadWX(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
+
+            Map<String, String> tokenMap = new HashMap<>();
+            tokenMap.put("accessToken", token);
+            tokenMap.put("refreshToken", refreshToken);
+
+            return Result.success(tokenMap, "登陆成功");
+        } catch (Exception e){
+            return Result.error(400, e.getMessage());
+        }
+    }
 }
