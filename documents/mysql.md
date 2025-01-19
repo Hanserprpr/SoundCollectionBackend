@@ -36,7 +36,7 @@ COLLATE utf8mb4_bin;
 | **email**       | `VARCHAR(100) UNIQUE`        | 唯一                                    | 邮箱                   |
 | **password**    | `CHAR(128) NOT NULL`         | 非空                                    | 加密后的密码            |
 | **wechat**      | `VARCHAR(100) UNIQUE`        | 唯一（可选）                             | 微信号（可选）          |
-| **student_id**  | `CHAR(20) UNIQUE NOT NULL`   | 非空，唯一                              | 学号                   |
+| **student_id**  | `CHAR(20) UNIQUE`   | 唯一                              | 学号                   |
 | **bio**         | `TEXT`                       | 无特殊约束                               | 个人简介               |
 | **avatar_url**  | `VARCHAR(255)`               | 无特殊约束                               | 头像URL地址            |
 | **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 注册时间               |
@@ -55,7 +55,7 @@ CREATE TABLE user (
     email VARCHAR(100) UNIQUE COMMENT '邮箱',
     password CHAR(128) NOT NULL COMMENT '加密后的密码',
     wechat VARCHAR(100) UNIQUE COMMENT '微信号（可选）',
-    student_id CHAR(20) UNIQUE NOT NULL COMMENT '学号',
+    student_id CHAR(20) UNIQUE COMMENT '学号',
     bio TEXT COMMENT '个人简介',
     avatar_url VARCHAR(255) COMMENT '头像URL地址',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
