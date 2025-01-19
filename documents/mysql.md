@@ -11,6 +11,16 @@
 7. **声音合集内容表 (playlist_sounds)**：存储声音合集与声音的多对多关系。
 8. **搜索记录表 (search_logs)**：记录用户的搜索行为，用于热门关键词统计和推荐功能。
 
+## 创建数据库
+
+```sql
+CREATE DATABASE SoundCollection
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+```
+
+---
+
 ## 用户表 (user)
 
 用户表用于存储用户的基本信息和状态。
