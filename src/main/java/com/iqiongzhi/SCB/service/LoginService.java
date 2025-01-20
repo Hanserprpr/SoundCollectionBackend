@@ -78,8 +78,8 @@ public class LoginService {
     }
 
     private boolean isExisted(String stuId){
-        List<User> list = userMapper.findUserByStuId(stuId);
-        return !list.isEmpty();
+        Integer count = userMapper.getUserId(stuId, "SDUId");
+        return count != null && count > 0;
     }
 
     private boolean isWxExisted(String openid){
@@ -230,6 +230,8 @@ public class LoginService {
             Map<String, String> tokenMap = new HashMap<>();
             tokenMap.put("accessToken", token);
             tokenMap.put("refreshToken", refreshToken);
+
+            userMapper.updateLastLoginTime(Integer.parseInt(id));
 
             return ResponseUtil.build(Result.success(tokenMap, "登陆成功"));
         } catch (Exception e){

@@ -75,15 +75,15 @@ public class JWTUtil {
 
         } catch (TokenExpiredException e) {
             // Token 过期
-            throw new RuntimeException("Token 已过期，请重新登录", e);
+            throw new RuntimeException("Token 已过期，请重新登录");
 
         } catch (JWTVerificationException e) {
             // Token 验证失败（签名无效等）
-            throw new RuntimeException("Token 无效，请检查后重试", e);
+            throw new RuntimeException("Token 无效，请检查后重试");
 
         } catch (Exception e) {
             // 其他异常
-            throw new RuntimeException("解析 Token 时发生错误，请稍后重试", e);
+            throw new RuntimeException("解析 Token 时发生错误，请稍后重试");
         }
     }
 }
