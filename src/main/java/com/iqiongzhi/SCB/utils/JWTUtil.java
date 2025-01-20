@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,10 +17,20 @@ import java.util.Map;
 @Component
 public class JWTUtil {
     @Value("${jwt.secret-key}")
-    public static String SECRET_KEY;
+    private String secretKey;
 
     @Value("${jwt.refresh-secret-key}")
+    private String refreshSecretKey;
+
+    public static String SECRET_KEY;
     public static String REFRESH_SECRET_KEY;
+
+    // 初始化静态变量
+    @PostConstruct
+    public void init() {
+        SECRET_KEY = secretKey;
+        REFRESH_SECRET_KEY = refreshSecretKey;
+    }
 
     public static final int EXPIRE_TIME = 30 * 24 * 3600;//Token过期时间
     public static final int REFRESH_EXPIRE_TIME = 30 * 24 * 3600;//RefreshToken过期时间

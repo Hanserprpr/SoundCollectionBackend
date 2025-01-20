@@ -4,8 +4,7 @@ import com.iqiongzhi.SCB.data.dto.LoginDTO;
 import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.mapper.UserMapper;
-import com.iqiongzhi.SCB.utils.JWTUtil;
-import com.iqiongzhi.SCB.utils.Regex;
+import com.iqiongzhi.SCB.utils.*;
 import com.iqiongzhi.SCB.config.Env;
 
 import kong.unirest.Unirest;
@@ -18,6 +17,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -35,7 +35,7 @@ public class LoginService {
      * @param password 密码
      * @return Result
      */
-    public Result SDUIdentify(String SDUId, String password) {
+    public ResponseEntity<Result> SDUIdentify(String SDUId, String password) {
         String baseURL = "https://pass.sdu.edu.cn/";
         String ticket, sTicket, validationResult;
 
@@ -47,7 +47,7 @@ public class LoginService {
                 throw new RuntimeException("Ticket wrong");
             }
         } catch (RuntimeException e) {
-            return Result.error(401, "Authentication failed");
+            return ResponseUtil.build(Result.error(401, "Authentication failed"));
         }
 
         //第二次请求(POST)，提供服务类型，获取sTicket
@@ -68,7 +68,7 @@ public class LoginService {
             userMapper.addUser(username,password,SDUId);
         }
 
-        String id = Integer.toString(userMapper.getUserId(SDUId));
+        String id = Integer.toString(userMapper.getUserId(SDUId, "SDUId"));
 
         return getToken(id);
     }
@@ -92,7 +92,7 @@ public class LoginService {
      * @param code 微信小程序登录凭证
      * @return Result
      */
-    public Result appWxLogin(String code) {
+    public ResponseEntity<Result> appWxLogin(String code) {
         String url = LOGIN_URL + "?appid=" + appId + "&secret=" + appSecret +
                 "&js_code=" + code + "&grant_type=authorization_code";
         HttpClient client = HttpClients.createDefault();
@@ -108,7 +108,7 @@ public class LoginService {
 //            如果成功就不会有errcode,此处是验证是否成功
             if(null == loginDTO.errcode) {
                 Result re  =  Result.error(Integer.valueOf(loginDTO.errcode), loginDTO.errmsg);
-                return re;
+                return ResponseUtil.build(re);
             }
         } catch (Exception e) {
             System.out.println("wx login succeed");
@@ -120,13 +120,10 @@ public class LoginService {
             userMapper.addWXUser(loginDTO.openid);
         }
         String user_id = loginDTO.openid;
-        String id = Integer.toString(userMapper.getUserId(user_id));
+        String id = Integer.toString(userMapper.getUserId(user_id, "wechat"));
 
         return getToken(id);
 
-
-//        后续开发的注意事项,此处的openid是所有微信用户唯一的
-//        可以在数据库中独立出微信用户的表,并用openid进行索引和查找
     }
 
     /**
@@ -134,7 +131,7 @@ public class LoginService {
      * @param refreshToken 刷新用token
      * @return Result
      */
-    public Result refresh(String refreshToken) {
+    public ResponseEntity<Result> refresh(String refreshToken) {
         try {
             DecodedJWT info = JWTUtil.getTokenInfo(refreshToken, REFRESH_SECRET_KEY);
             String id = info.getClaim("user_id").asString();
@@ -145,26 +142,29 @@ public class LoginService {
                 map.put("accessToken", newAccessToken);
                 String msg;
                 msg = "成功！已获取新accessToken";
-                return new Result(200, map, msg);
+                return ResponseUtil.build(new Result(200, map, msg));
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return Result.error(400, "无有效RefreshToken");
+        return ResponseUtil.build(Result.error(400, "无有效RefreshToken"));
     }
 
     /**
-     * 简单的用户名密码登录
+     * 用户名密码登录
      * @param identifier 用户名或邮箱
      * @param password 密码
      * @return Result
      */
-    public Result simpleLogin(String identifier, String password) {
-        if (userMapper.getPasswd(identifier).equals(password)) {
-            String id = Integer.toString(userMapper.getUserId(identifier));
+    public ResponseEntity<Result> simpleLogin(String identifier, String password) {
+        if (Objects.equals(userMapper.getPasswdByName(identifier), password)) {
+            String id = Integer.toString(userMapper.getUserId(identifier, "username"));
+            return getToken(id);
+        } else if (Objects.equals(userMapper.getPasswdByEmail(identifier), password)) {
+            String id = Integer.toString(userMapper.getUserId(identifier, "email"));
             return getToken(id);
         } else {
-            return Result.error(401, "账号或密码错误");
+            return ResponseUtil.build(Result.error(401, "账号或密码错误"));
         }
     }
 
@@ -173,7 +173,7 @@ public class LoginService {
      * @param id 用户id
      * @return Result
      */
-    private Result getToken(String id) {
+    private ResponseEntity<Result> getToken(String id) {
         try{
             String refreshToken = JWTUtil.getTokenWithPayLoadWX(id,JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
 
@@ -183,9 +183,9 @@ public class LoginService {
             tokenMap.put("accessToken", token);
             tokenMap.put("refreshToken", refreshToken);
 
-            return Result.success(tokenMap, "登陆成功");
+            return ResponseUtil.build(Result.success(tokenMap, "登陆成功"));
         } catch (Exception e){
-            return Result.error(400, e.getMessage());
+            return ResponseUtil.build(Result.error(400, e.getMessage()));
         }
     }
 }
