@@ -1,5 +1,6 @@
 package com.iqiongzhi.SCB.controller;
 
+import com.iqiongzhi.SCB.data.dto.VerifyRequestDTO;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.service.LoginService;
 import com.iqiongzhi.SCB.data.dto.WeChatUserDTO;
@@ -52,6 +53,19 @@ public class LoginController {
         return loginService.simpleLogin(identifier,password);
 
     }
+
+    @RequestMapping(value = "/emaillogin", method = {RequestMethod.POST})
+    public ResponseEntity<Result> emailLogin(HttpServletRequest request, HttpServletResponse response, String email) {
+        return loginService.emailLogin(email);
+    }
+
+    @RequestMapping(value = "/verify", method = RequestMethod.POST)
+    public ResponseEntity<Result> verify(@RequestBody VerifyRequestDTO verifyRequest) {
+        String ticket = verifyRequest.getTicket();
+        String code = verifyRequest.getCode();
+        return loginService.verify(ticket, code);
+    }
+
 
     @PostMapping("/refreshToken")
     public ResponseEntity<Result> refresh(@RequestHeader String refreshToken){

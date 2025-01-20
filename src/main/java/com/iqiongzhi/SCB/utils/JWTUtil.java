@@ -3,11 +3,12 @@ package com.iqiongzhi.SCB.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
@@ -36,7 +37,9 @@ public class JWTUtil {
     public static final int REFRESH_EXPIRE_TIME = 30 * 24 * 3600;//RefreshToken过期时间
 
     //生成token
-    public static String getToken(Map<String, String> map, int expireTime, String key) throws UnsupportedEncodingException {
+    public static String getToken(String accountId, int expireTime, String key) throws UnsupportedEncodingException {
+        Map<String, String> map = new HashMap<>();
+        map.put("user_id", accountId);
         //获取时间，设置token过期时间
         Calendar instance = Calendar.getInstance();
         instance.add(Calendar.SECOND, expireTime);
@@ -59,15 +62,28 @@ public class JWTUtil {
         return JWT.require(Algorithm.HMAC256(key)).build().verify(token);
     }
 
-    public static String getTokenWithPayLoad(String accountId, int expireTime, String key) throws UnsupportedEncodingException {
-        Map<String, String> map = new HashMap<>();
-        map.put("user_id", accountId);
-        return JWTUtil.getToken(map, expireTime, key);
-    }
+    // 获取用户 ID
+    public static String getUserId(String token) {
+        try {
+            // 验证并解析 Token
+            DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET_KEY))
+                    .build()
+                    .verify(token);
 
-    public static String getTokenWithPayLoadWX(String openId,int expireTime, String key) throws UnsupportedEncodingException {
-        Map<String, String> map = new HashMap<>();
-        map.put("user_id", openId);
-        return JWTUtil.getToken(map, expireTime, key);
+            // 提取用户 ID
+            return decodedJWT.getClaim("user_id").asString();
+
+        } catch (TokenExpiredException e) {
+            // Token 过期
+            throw new RuntimeException("Token 已过期，请重新登录", e);
+
+        } catch (JWTVerificationException e) {
+            // Token 验证失败（签名无效等）
+            throw new RuntimeException("Token 无效，请检查后重试", e);
+
+        } catch (Exception e) {
+            // 其他异常
+            throw new RuntimeException("解析 Token 时发生错误，请稍后重试", e);
+        }
     }
 }

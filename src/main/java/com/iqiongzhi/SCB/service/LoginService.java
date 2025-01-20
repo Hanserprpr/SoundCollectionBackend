@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.iqiongzhi.SCB.utils.JWTUtil.REFRESH_SECRET_KEY;
 
@@ -29,11 +30,14 @@ public class LoginService {
     @Autowired
     UserMapper userMapper;
 
+    @Autowired
+    private VerificationService verificationService;
+
     /**
      * 山东大学统一认证登录
      * @param SDUId 学号
      * @param password 密码
-     * @return Result
+     * @return ResponseEntity<Result>
      */
     public ResponseEntity<Result> SDUIdentify(String SDUId, String password) {
         String baseURL = "https://pass.sdu.edu.cn/";
@@ -90,7 +94,7 @@ public class LoginService {
     /**
      * 微信登录
      * @param code 微信小程序登录凭证
-     * @return Result
+     * @return ResponseEntity<Result>
      */
     public ResponseEntity<Result> appWxLogin(String code) {
         String url = LOGIN_URL + "?appid=" + appId + "&secret=" + appSecret +
@@ -129,7 +133,7 @@ public class LoginService {
     /**
      * 刷新token
      * @param refreshToken 刷新用token
-     * @return Result
+     * @return ResponseEntity<Result>
      */
     public ResponseEntity<Result> refresh(String refreshToken) {
         try {
@@ -137,7 +141,7 @@ public class LoginService {
             String id = info.getClaim("user_id").asString();
             Date date = info.getExpiresAt();
             if (date.after(new Date())) {
-                String newAccessToken = JWTUtil.getTokenWithPayLoad(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
+                String newAccessToken = JWTUtil.getToken(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
                 Map<String, String> map = new HashMap<>();
                 map.put("accessToken", newAccessToken);
                 String msg;
@@ -154,7 +158,7 @@ public class LoginService {
      * 用户名密码登录
      * @param identifier 用户名或邮箱
      * @param password 密码
-     * @return Result
+     * @return ResponseEntity<Result>
      */
     public ResponseEntity<Result> simpleLogin(String identifier, String password) {
         if (Objects.equals(userMapper.getPasswdByName(identifier), password)) {
@@ -168,16 +172,60 @@ public class LoginService {
         }
     }
 
+    private final Map<String, Map<String, String>> ticketIdMap = new ConcurrentHashMap<>();
+    /**
+     * 验证码登录
+     * @param email 邮箱
+     * return ResponseEntity<Result>
+     */
+    public ResponseEntity<Result> emailLogin(String email) {
+        if (userMapper.findUserByEmail(email) == null) {
+            return ResponseUtil.build(Result.error(401, "邮箱未注册"));
+        }
+        String id = Integer.toString(userMapper.getUserId(email, "email"));
+        String[] verify = verificationService.generateVerification();
+        String code = verify[0];
+        String ticket = verify[1];
+
+        Map<String, String> data = new HashMap<>();
+        data.put("user_id", id);
+        ticketIdMap.put(ticket, data);
+        try{
+            // 发送邮件
+            EmailSender.sendEmail(email, "声音博物馆登录验证码", "您的验证码是：" + code);}
+        catch(Exception e){
+            return ResponseUtil.build(Result.error(554, "邮件发送失败"));
+        }
+        return ResponseUtil.build(Result.success(ticket, "验证码已发送"));
+    }
+
+
+    /**
+     * 验证邮箱注册
+     * @param ticket 获取验证码时返回的 ticket
+     * @param code 验证码
+     * @return 验证结果
+     */
+    public ResponseEntity<Result> verify(String ticket, String code) {
+        if (verificationService.verifyCode(ticket, code)) {
+            Map<String, String> data = ticketIdMap.get(ticket);
+            ticketIdMap.remove(ticket);
+            return getToken(data.get("user_id"));
+        } else {
+            return ResponseUtil.build(Result.error(401, "验证码错误"));
+        }
+    }
+
     /**
      * 获取token
      * @param id 用户id
-     * @return Result
+     * @return ResponseEntity<Result>
      */
     private ResponseEntity<Result> getToken(String id) {
         try{
-            String refreshToken = JWTUtil.getTokenWithPayLoadWX(id,JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
+            String refreshToken = JWTUtil.getToken(id,JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
 
-            String token = JWTUtil.getTokenWithPayLoadWX(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
+            String token = JWTUtil.getToken(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
 
             Map<String, String> tokenMap = new HashMap<>();
             tokenMap.put("accessToken", token);
