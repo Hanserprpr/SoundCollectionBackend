@@ -11,12 +11,12 @@ public interface UserMapper {
     @Select("select id from user where email=#{email}")
     Integer findUserByEmail(String email);
     @Select("select id, username, email, wechat, bio, avatar_url, created_at, updated_at, last_login_at, status from user where id=#{id}")
-    List<User> findUserById(String id);
+    User findUserById(String id);
     @Select("select username from user where wechat=#{openid}")
     List<User> findUserByOpenId(String openid);
     @Select("select password from user where username=#{username}")
     String getPasswdByName(String username);
-    @Select("select id from user where email=#{email}")
+    @Select("select password from user where email=#{email}")
     String getPasswdByEmail(String email);
     @SelectProvider(type = UserSQLProvider.class, method = "buildGetUserIdQuery")
     Integer getUserId(@Param("id") String id, @Param("type") String type);
@@ -31,4 +31,8 @@ public interface UserMapper {
 
     @Update("update user set last_login_at = now() where id = #{id}")
     void updateLastLoginTime(int id);
+
+
+    @UpdateProvider(type = UserSQLProvider.class, method = "updateById")
+    void updateById(@Param("id") Integer id, @Param("user") User user);
 }

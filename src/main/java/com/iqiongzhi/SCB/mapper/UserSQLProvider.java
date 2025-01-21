@@ -1,6 +1,8 @@
 package com.iqiongzhi.SCB.mapper;
 
+import com.iqiongzhi.SCB.data.po.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.jdbc.SQL;
 
 import java.util.Map;
 
@@ -28,5 +30,26 @@ public class UserSQLProvider {
         }
 
         return sql.toString();
+    }
+
+    public String updateById(Integer id,User user) {
+        return new SQL() {{
+            UPDATE("user");
+
+            if (user.getUsername() != null) {
+                SET("username = #{user.username}");
+            }
+            if (user.getPassword() != null) {
+                SET("password = #{user.password}");
+            }
+            if (user.getBio() != null) {
+                SET("bio = #{user.bio}");
+            }
+            if (user.getAvatarUrl() != null) {
+                SET("avatar_url = #{user.avatarUrl}");
+            }
+            SET("updated_at = now()");
+            WHERE("id = #{id}");
+        }}.toString();
     }
 }
