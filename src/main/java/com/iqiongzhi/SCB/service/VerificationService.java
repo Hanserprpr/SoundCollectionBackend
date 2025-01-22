@@ -1,17 +1,17 @@
 package com.iqiongzhi.SCB.service;
 
+import com.iqiongzhi.SCB.cache.IGlobalCache;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class VerificationService {
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private IGlobalCache redis;
 
     /**
      * 生成验证码和 ticket
@@ -25,7 +25,7 @@ public class VerificationService {
         String ticket = UUID.randomUUID().toString();
 
         // 存储到 Redis 中，设置过期时间（例如 5 分钟）
-        redisTemplate.opsForValue().set("VERIFICATION_CODE:" + ticket, code, 5, TimeUnit.MINUTES);
+        redis.set("VERIFICATION_CODE:" + ticket, code, 5 * 60);
 
         return new String[]{code, ticket};
     }
@@ -39,10 +39,10 @@ public class VerificationService {
     public boolean verifyCode(String ticket, String code) {
         // 获取 Redis 中存储的验证码
         String key = "VERIFICATION_CODE:" + ticket;
-        String storedCode = redisTemplate.opsForValue().get(key);
+        Object storedCode = redis.get(key);
 
         if (storedCode != null && storedCode.equals(code)) {
-            redisTemplate.delete(key);
+            redis.del(key);
             return true;
         }
         return false;

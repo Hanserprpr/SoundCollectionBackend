@@ -33,6 +33,9 @@ public class LoginService {
     @Autowired
     private VerificationService verificationService;
 
+    @Autowired
+    private JWTUtil jwtUtil;
+
     /**
      * 山东大学统一认证登录
      * @param SDUId 学号
@@ -141,7 +144,7 @@ public class LoginService {
             String id = info.getClaim("user_id").asString();
             Date date = info.getExpiresAt();
             if (date.after(new Date())) {
-                String newAccessToken = JWTUtil.getToken(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
+                String newAccessToken = jwtUtil.getToken(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
                 Map<String, String> map = new HashMap<>();
                 map.put("accessToken", newAccessToken);
                 String msg;
@@ -223,9 +226,9 @@ public class LoginService {
      */
     private ResponseEntity<Result> getToken(String id) {
         try{
-            String refreshToken = JWTUtil.getToken(id,JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
+            String refreshToken = jwtUtil.getToken(id,JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
 
-            String token = JWTUtil.getToken(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
+            String token = jwtUtil.getToken(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
 
             Map<String, String> tokenMap = new HashMap<>();
             tokenMap.put("accessToken", token);

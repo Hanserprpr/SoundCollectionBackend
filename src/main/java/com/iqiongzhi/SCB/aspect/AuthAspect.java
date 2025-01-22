@@ -1,5 +1,6 @@
 package com.iqiongzhi.SCB.aspect;
 
+import com.auth0.jwt.JWT;
 import com.iqiongzhi.SCB.annotation.Auth;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.utils.JWTUtil;
@@ -8,6 +9,7 @@ import com.iqiongzhi.SCB.utils.ResponseUtil;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -16,6 +18,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 @Aspect
 public class AuthAspect {
+    @Autowired
+    private JWTUtil jwtUtil;
 
     @Around("@annotation(com.iqiongzhi.SCB.annotation.Auth)") // 拦截带有 @Auth 注解的方法
     public Object verifyToken(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -36,7 +40,7 @@ public class AuthAspect {
 
         // 校验 Token 的有效性
         try {
-            String userId = JWTUtil.getUserId(token);
+            String userId = jwtUtil.getUserId(token);
             request.setAttribute("userId", userId); // 将 userId 添加到请求上下文
         } catch (Exception e) {
             return ResponseUtil.build(Result.error(401, String.valueOf(e.getMessage())));

@@ -6,7 +6,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.iqiongzhi.SCB.cache.IGlobalCache;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -14,9 +18,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JWTUtil {
+    @Autowired
+    private IGlobalCache redis;
+
     @Value("${jwt.secret-key}")
     private String secretKey;
 
@@ -33,11 +41,11 @@ public class JWTUtil {
         REFRESH_SECRET_KEY = refreshSecretKey;
     }
 
-    public static final int EXPIRE_TIME = 30 * 24 * 3600;//Token过期时间
+    public static final int EXPIRE_TIME = 120;//Token过期时间
     public static final int REFRESH_EXPIRE_TIME = 30 * 24 * 3600;//RefreshToken过期时间
 
     //生成token
-    public static String getToken(String accountId, int expireTime, String key) throws UnsupportedEncodingException {
+    public String getToken(String accountId, int expireTime, String key) throws UnsupportedEncodingException {
         Map<String, String> map = new HashMap<>();
         map.put("user_id", accountId);
         //获取时间，设置token过期时间
@@ -49,7 +57,9 @@ public class JWTUtil {
         map.forEach(builder::withClaim);
 
         //JWT过期时间 + signature
-        return builder.withExpiresAt(instance.getTime()).sign(Algorithm.HMAC256(key));
+        String token = builder.withExpiresAt(instance.getTime()).sign(Algorithm.HMAC256(key));
+        redis.set(token, "1", EXPIRE_TIME);
+        return token;
     }
 
 
@@ -59,8 +69,12 @@ public class JWTUtil {
     }
 
     // 获取用户 ID
-    public static String getUserId(String token) {
+    public String getUserId(String token) {
         try {
+            System.out.println(redis.get(token) == null);
+            if (redis.get(token) == null) {
+                throw new IllegalArgumentException();
+            }
             // 验证并解析 Token
             DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET_KEY))
                     .build()
@@ -75,6 +89,10 @@ public class JWTUtil {
 
         } catch (JWTVerificationException e) {
             // Token 验证失败（签名无效等）
+            throw new RuntimeException("Token 无效，请检查后重试");
+
+        }catch (IllegalArgumentException e) {
+            // Token 无效
             throw new RuntimeException("Token 无效，请检查后重试");
 
         } catch (Exception e) {
