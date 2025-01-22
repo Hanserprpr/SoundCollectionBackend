@@ -5,7 +5,6 @@ import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.mapper.UserMapper;
 import com.iqiongzhi.SCB.utils.*;
-import com.iqiongzhi.SCB.config.Env;
 import com.iqiongzhi.SCB.utils.BcryptUtils;
 
 import kong.unirest.Unirest;
@@ -17,6 +16,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -90,9 +90,12 @@ public class LoginService {
         List<User> list = userMapper.findUserByOpenId(openid);
         return !list.isEmpty();
     }
+    @Value("${wechat.appid}")
+    private String appId;
 
-    private final static String appId = Env.appId;
-    private final static String appSecret = Env.appSecret;
+    @Value("${wechat.secret}")
+    private String secret;
+
     private final static String LOGIN_URL = "https://api.weixin.qq.com/sns/jscode2session";
 
     /**
@@ -101,7 +104,7 @@ public class LoginService {
      * @return ResponseEntity<Result>
      */
     public ResponseEntity<Result> appWxLogin(String code) {
-        String url = LOGIN_URL + "?appid=" + appId + "&secret=" + appSecret +
+        String url = LOGIN_URL + "?appid=" + appId + "&secret=" + secret +
                 "&js_code=" + code + "&grant_type=authorization_code";
         HttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
