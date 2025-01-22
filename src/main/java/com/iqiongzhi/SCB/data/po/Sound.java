@@ -1,5 +1,7 @@
 package com.iqiongzhi.SCB.data.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @TableName("sound")
 public class Sound {
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     private String userId;

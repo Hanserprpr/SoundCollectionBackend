@@ -1,6 +1,7 @@
 package com.iqiongzhi.SCB.service;
 
 import com.iqiongzhi.SCB.data.vo.Result;
+import com.iqiongzhi.SCB.mapper.SoundMapper;
 import com.iqiongzhi.SCB.mapper.UserMapper;
 import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.utils.ResponseUtil;
@@ -17,6 +18,8 @@ public class UserCenterService {
     private IGlobalCache redis;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    private SoundMapper soundMapper;
 
     /**
      * 获取用户信息
@@ -63,6 +66,6 @@ public class UserCenterService {
      * @return 用户上传的声音
      */
     public ResponseEntity<Result> getMyVoices(String userId) {
-        return ResponseUtil.build(Result.success(userMapper.getMyVoices(userId), "获取成功"));
+        return ResponseUtil.build(Result.success(soundMapper.getMyVoices(userId), "获取成功"));
     }
 }

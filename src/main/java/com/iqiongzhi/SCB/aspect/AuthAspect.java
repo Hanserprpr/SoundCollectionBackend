@@ -27,16 +27,17 @@ public class AuthAspect {
 
     @Around("@annotation(com.iqiongzhi.SCB.annotation.Auth)") // 拦截带有 @Auth 注解的方法
     public Object verifyToken(ProceedingJoinPoint joinPoint) throws Throwable {
-        // 获取 HTTP 请求中的 Token
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        String token = TokenUtil.extractToken(request);
-
-        // 校验 Token 的有效性
         try {
+            // 获取 HTTP 请求中的 Token
+            HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+            String token = TokenUtil.extractToken(request);
+
+            // 校验 Token 的有效性
+
             String userId = jwtUtil.getUserId(token, JWTUtil.SECRET_KEY);
             request.setAttribute("userId", userId); // 将 userId 添加到请求上下文
         } catch (Exception e) {
-            return ResponseUtil.build(Result.error(401, String.valueOf(e.getMessage())));
+            return ResponseUtil.build(Result.error(403, String.valueOf(e.getMessage())));
         }
 
         // 继续执行目标方法

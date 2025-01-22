@@ -41,4 +41,27 @@ public class SoundController {
         String userId = (String) request.getAttribute("userId");
         return soundService.delSound(userId, soundId);
     }
+
+    /**
+     * 获取声音数据
+     * @param soundId 音频id
+     * @return 音频信息
+     */
+    @Auth
+    @GetMapping("/getSound")
+    public ResponseEntity<Result> getSound(@RequestParam String soundId) {
+        return soundService.getSound(soundId);
+    }
+
+    /**
+     * 获取指定类型声音列表
+     * @param category 类别
+     * @param page 页码
+     * @param size 每页数量
+     * @return 音频列表
+     */
+    @GetMapping("/getSoundList")
+    public ResponseEntity<Result> getSoundList(String category, int page, int size) {
+        return soundService.getSoundList(category, page, size);
+    }
 }
