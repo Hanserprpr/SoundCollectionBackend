@@ -23,6 +23,8 @@ public interface UserMapper {
     Integer getUserId(@Param("id") String id, @Param("type") String type);
     @Select("select id, user_id, title, description, category, file_url, cover_url, location, created_at, updated_at from sound where user_id=#{Id}")
     List<Sound> getMyVoices(String userId);
+    @Select("select user_id from sound where id=#{soundId}")
+    String getSoundOwner(String soundId);
 
     @Insert("insert into user (username, password, student_id) values (#{username}, #{password}, #{SDUId})")
     void addUser(String username, String password, String SDUId);
@@ -30,10 +32,15 @@ public interface UserMapper {
     void addWXUser(String openid);
     @Insert("insert into user (username, email, password) values (#{email}, #{email}, #{password})")
     void addEmailUser(String email, String password);
+    @Insert("insert into sound (user_id, title, description, category, file_url, cover_url, location) values (#{userId}, #{title}, #{description}, #{category}, #{fileUrl}, #{coverUrl}, #{location})")
+    void insertSound(Sound sound);
 
     @Update("update user set last_login_at = now() where id = #{id}")
     void updateLastLoginTime(int id);
 
     @UpdateProvider(type = UserSQLProvider.class, method = "updateById")
     void updateById(@Param("id") Integer id, @Param("user") User user);
+
+    @Delete("delete from sound where id=#{id}")
+    void delSound(String soundId);
 }

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Sound {
     private Integer id;
 
-    private Integer userId;
+    private String userId;
 
     private String title;
 
