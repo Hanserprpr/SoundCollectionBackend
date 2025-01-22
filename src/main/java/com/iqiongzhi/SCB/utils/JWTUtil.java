@@ -18,7 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
 
 @Component
 public class JWTUtil {
@@ -41,7 +41,7 @@ public class JWTUtil {
         REFRESH_SECRET_KEY = refreshSecretKey;
     }
 
-    public static final int EXPIRE_TIME = 120;//Token过期时间
+    public static final int EXPIRE_TIME = 1800;//Token过期时间
     public static final int REFRESH_EXPIRE_TIME = 30 * 24 * 3600;//RefreshToken过期时间
 
     //生成token
@@ -58,7 +58,7 @@ public class JWTUtil {
 
         //JWT过期时间 + signature
         String token = builder.withExpiresAt(instance.getTime()).sign(Algorithm.HMAC256(key));
-        redis.set(token, "1", EXPIRE_TIME);
+        redis.set(token, "1", expireTime);
         return token;
     }
 
@@ -69,14 +69,13 @@ public class JWTUtil {
     }
 
     // 获取用户 ID
-    public String getUserId(String token) {
+    public String getUserId(String token, String key) {
         try {
-            System.out.println(redis.get(token) == null);
             if (redis.get(token) == null) {
                 throw new IllegalArgumentException();
             }
             // 验证并解析 Token
-            DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET_KEY))
+            DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(key))
                     .build()
                     .verify(token);
 

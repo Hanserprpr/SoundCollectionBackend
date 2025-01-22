@@ -1,5 +1,6 @@
 package com.iqiongzhi.SCB.controller;
 
+import com.iqiongzhi.SCB.annotation.refreshAuth;
 import com.iqiongzhi.SCB.data.dto.VerifyRequestDTO;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.service.LoginService;
@@ -19,6 +20,9 @@ import java.util.Map;
 @RequestMapping("/login")
 public class LoginController {
     @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
     LoginService loginService;
     @RequestMapping(value = "/SDUlogin", method = {RequestMethod.POST})
     public ResponseEntity<Result> SDUlogin(HttpServletRequest request, HttpServletResponse response, @RequestBody Map map) {
@@ -35,7 +39,6 @@ public class LoginController {
 
     @RequestMapping(value = "/WXLogin", method = {RequestMethod.POST})
     public ResponseEntity<Result> WXLogin(HttpServletRequest request, HttpServletResponse response,@RequestBody WeChatUserDTO dto) {
-        // System.out.println(dto);
         return loginService.appWxLogin(dto.getCode());
 
     }
@@ -66,9 +69,10 @@ public class LoginController {
         return loginService.verify(ticket, code);
     }
 
-
+    @refreshAuth
     @PostMapping("/refreshToken")
-    public ResponseEntity<Result> refresh(@RequestHeader String refreshToken){
-        return loginService.refresh(refreshToken);
+    public ResponseEntity<Result> refresh(){
+        String userId = (String) request.getAttribute("userId");
+        return loginService.refresh(userId);
     }
 }

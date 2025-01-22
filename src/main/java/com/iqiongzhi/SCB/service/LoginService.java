@@ -6,9 +6,9 @@ import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.mapper.UserMapper;
 import com.iqiongzhi.SCB.utils.*;
 import com.iqiongzhi.SCB.config.Env;
+import com.iqiongzhi.SCB.utils.BcryptUtils;
 
 import kong.unirest.Unirest;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.alibaba.fastjson2.JSON;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -72,7 +72,8 @@ public class LoginService {
         String KSH = Regex.getContext(validationResult, "cas:KSH");
 
         if(!isExisted(SDUId)){
-            userMapper.addUser(username,password,SDUId);
+            String passwd = BcryptUtils.encrypt(password);
+            userMapper.addUser(username, passwd,SDUId);
         }
 
         String id = Integer.toString(userMapper.getUserId(SDUId, "SDUId"));
@@ -135,22 +136,17 @@ public class LoginService {
 
     /**
      * 刷新token
-     * @param refreshToken 刷新用token
+     * @param userId 刷新用token
      * @return ResponseEntity<Result>
      */
-    public ResponseEntity<Result> refresh(String refreshToken) {
+    public ResponseEntity<Result> refresh(String userId) {
         try {
-            DecodedJWT info = JWTUtil.getTokenInfo(refreshToken, REFRESH_SECRET_KEY);
-            String id = info.getClaim("user_id").asString();
-            Date date = info.getExpiresAt();
-            if (date.after(new Date())) {
-                String newAccessToken = jwtUtil.getToken(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
-                Map<String, String> map = new HashMap<>();
-                map.put("accessToken", newAccessToken);
-                String msg;
-                msg = "成功！已获取新accessToken";
-                return ResponseUtil.build(new Result(200, map, msg));
-            }
+             String newAccessToken = jwtUtil.getToken(userId, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
+             Map<String, String> map = new HashMap<>();
+             map.put("accessToken", newAccessToken);
+             String msg;
+             msg = "成功！已获取新accessToken";
+             return ResponseUtil.build(new Result(200, map, msg));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -164,10 +160,10 @@ public class LoginService {
      * @return ResponseEntity<Result>
      */
     public ResponseEntity<Result> simpleLogin(String identifier, String password) {
-        if (Objects.equals(userMapper.getPasswdByName(identifier), password)) {
+        if (BcryptUtils.verifyPasswd(password, userMapper.getPasswdByName(identifier))) {
             String id = Integer.toString(userMapper.getUserId(identifier, "username"));
             return getToken(id);
-        } else if (Objects.equals(userMapper.getPasswdByEmail(identifier), password)) {
+        } else if (BcryptUtils.verifyPasswd(password, userMapper.getPasswdByEmail(identifier))) {
             String id = Integer.toString(userMapper.getUserId(identifier, "email"));
             return getToken(id);
         } else {

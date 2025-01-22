@@ -3,7 +3,7 @@ package com.iqiongzhi.SCB.service;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.mapper.UserMapper;
 import com.iqiongzhi.SCB.utils.EmailSender;
-import com.iqiongzhi.SCB.service.VerificationService;
+import com.iqiongzhi.SCB.utils.BcryptUtils;
 import com.iqiongzhi.SCB.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,10 +37,10 @@ public class SignupService {
         String[] verify = verificationService.generateVerification();
         String code = verify[0];
         String ticket = verify[1];
-
+        String passwd = BcryptUtils.encrypt(password);
         Map<String, String> data = new HashMap<>();
         data.put("email", email);
-        data.put("password", password);
+        data.put("password", passwd);
         ticketDataMap.put(ticket, data);
 
         try{

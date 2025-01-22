@@ -39,6 +39,8 @@ COLLATE utf8mb4_bin;
 | **student_id**  | `CHAR(20) UNIQUE`   | 唯一                              | 学号                   |
 | **bio**         | `TEXT`                       | 无特殊约束                               | 个人简介               |
 | **avatar_url**  | `VARCHAR(255)`               | 无特殊约束                               | 头像URL地址            |
+| **level**  | `TINYINT DEFAULT 1` | 默认等级为1  | 用户等级 |
+| **permission** | `TINYINT DEFAULT 2` | 默认权限2 | 用户权限等级 |
 | **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 注册时间               |
 | **updated_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP` | 自动更新为当前时间                       | 最后更新时间            |
 | **last_login_at** | `TIMESTAMP DEFAULT NULL`   | 可为空                                  | 最后登录时间            |
@@ -58,6 +60,8 @@ CREATE TABLE user (
     student_id CHAR(20) UNIQUE COMMENT '学号',
     bio TEXT COMMENT '个人简介',
     avatar_url VARCHAR(255) COMMENT '头像URL地址',
+    level TINYINT DEFAULT 1 COMMENT '用户等级',
+    permission TINYINT DEFAULT 2 COMMENT '用户权限等级',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
     last_login_at TIMESTAMP DEFAULT NULL COMMENT '最后登录时间',

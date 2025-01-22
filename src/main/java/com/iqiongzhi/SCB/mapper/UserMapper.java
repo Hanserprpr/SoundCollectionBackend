@@ -1,6 +1,7 @@
 package com.iqiongzhi.SCB.mapper;
 
 import com.iqiongzhi.SCB.data.po.User;
+import com.iqiongzhi.SCB.data.po.Sound;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -20,7 +21,8 @@ public interface UserMapper {
     String getPasswdByEmail(String email);
     @SelectProvider(type = UserSQLProvider.class, method = "buildGetUserIdQuery")
     Integer getUserId(@Param("id") String id, @Param("type") String type);
-
+    @Select("select id, user_id, title, description, category, file_url, cover_url, location, created_at, updated_at from sound where user_id=#{Id}")
+    List<Sound> getMyVoices(String userId);
 
     @Insert("insert into user (username, password, student_id) values (#{username}, #{password}, #{SDUId})")
     void addUser(String username, String password, String SDUId);
@@ -31,7 +33,6 @@ public interface UserMapper {
 
     @Update("update user set last_login_at = now() where id = #{id}")
     void updateLastLoginTime(int id);
-
 
     @UpdateProvider(type = UserSQLProvider.class, method = "updateById")
     void updateById(@Param("id") Integer id, @Param("user") User user);
