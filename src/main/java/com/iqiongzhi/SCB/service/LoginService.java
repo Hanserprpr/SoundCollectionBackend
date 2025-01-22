@@ -160,10 +160,11 @@ public class LoginService {
      * @return ResponseEntity<Result>
      */
     public ResponseEntity<Result> simpleLogin(String identifier, String password) {
-        if (BcryptUtils.verifyPasswd(password, userMapper.getPasswdByName(identifier))) {
+        String passwd = userMapper.getPasswdByName(identifier);
+        if (passwd != null && BcryptUtils.verifyPasswd(password, passwd)) {
             String id = Integer.toString(userMapper.getUserId(identifier, "username"));
             return getToken(id);
-        } else if (BcryptUtils.verifyPasswd(password, userMapper.getPasswdByEmail(identifier))) {
+        } else if ((passwd = userMapper.getPasswdByEmail(identifier)) != null && BcryptUtils.verifyPasswd(password, passwd)) {
             String id = Integer.toString(userMapper.getUserId(identifier, "email"));
             return getToken(id);
         } else {
