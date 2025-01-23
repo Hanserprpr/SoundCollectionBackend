@@ -188,8 +188,8 @@ CREATE TABLE comments (
 | 字段名          | 数据类型                     | 约束                                    | 描述                   |
 |------------------|------------------------------|-----------------------------------------|------------------------|
 | **id**          | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 收藏记录的唯一ID       |
-| **user_id**     | `INT NOT NULL`               | 外键，关联用户表                         | 收藏者的用户ID         |
-| **sound_id**    | `INT NOT NULL`               | 外键，关联声音表                         | 被收藏的声音ID         |
+| **user_id**     | `INT NOT NULL`               | 外键，关联用户表,与sound_id唯一对应       | 收藏者的用户ID         |
+| **sound_id**    | `INT NOT NULL`               | 外键，关联声音表，与user_id唯一对应       | 被收藏的声音ID         |
 | **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 收藏时间               |
 
 ---
@@ -203,7 +203,8 @@ CREATE TABLE collections (
     sound_id INT NOT NULL COMMENT '被收藏的声音ID',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '收藏时间',
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE
+    FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_sound (user_id, sound_id) COMMENT '唯一约束，防止重复收藏'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏记录表';
 ```
 

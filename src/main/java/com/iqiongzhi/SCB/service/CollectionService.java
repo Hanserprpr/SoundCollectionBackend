@@ -5,6 +5,8 @@ import com.iqiongzhi.SCB.utils.ResponseUtil;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.mapper.CollectionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,10 @@ public class CollectionService {
         try {
             collectionMapper.collect(userId, soundId);
             return ResponseEntity.ok(Result.success(null, "添加收藏成功"));
+        } catch (DuplicateKeyException e) {
+            return ResponseUtil.build(Result.error(409, "已经收藏过了"));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseUtil.build(Result.error(404, "声音不存在"));
         } catch (Exception e) {
             return ResponseUtil.build(Result.error(400, "添加收藏失败"));
         }
@@ -32,8 +38,8 @@ public class CollectionService {
             List<Sound> result = collectionMapper.getCollectedSoundList(soundIds);
             return ResponseUtil.build(Result.success(result, "获取收藏成功"));
         } catch (Exception e) {
-            return ResponseUtil.build(Result.error(400, "获取收藏失败"+e));
+            return ResponseUtil.build(Result.error(400, "获取收藏失败" + e));
         }
     }
-
+    
 }
