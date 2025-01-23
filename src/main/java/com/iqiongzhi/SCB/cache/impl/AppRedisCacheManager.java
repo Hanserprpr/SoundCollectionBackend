@@ -29,8 +29,7 @@ public class AppRedisCacheManager implements IGlobalCache {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            throw e;
         }
     }
 
@@ -41,12 +40,7 @@ public class AppRedisCacheManager implements IGlobalCache {
 
     @Override
     public boolean hasKey(String key) {
-        try {
-            return redisTemplate.hasKey(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
     @Override
@@ -68,28 +62,18 @@ public class AppRedisCacheManager implements IGlobalCache {
 
     @Override
     public boolean set(String key, Object value) {
-        try {
-            redisTemplate.opsForValue().set(key, value);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForValue().set(key, value);
+        return true;
     }
 
     @Override
     public boolean set(String key, Object value, long time) {
-        try {
-            if (time > 0) {
-                redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
-            } else {
-                set(key, value);
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        if (time > 0) {
+            redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+        } else {
+            set(key, value);
         }
+        return true;
     }
 
     @Override
@@ -120,52 +104,32 @@ public class AppRedisCacheManager implements IGlobalCache {
 
     @Override
     public boolean hmset(String key, Map<String, Object> map) {
-        try {
-            redisTemplate.opsForHash().putAll(key, map);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForHash().putAll(key, map);
+        return true;
     }
 
     @Override
     public boolean hmset(String key, Map<String, Object> map, long time) {
-        try {
-            redisTemplate.opsForHash().putAll(key, map);
-            if (time > 0) {
-                expire(key, time);
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        redisTemplate.opsForHash().putAll(key, map);
+        if (time > 0) {
+            expire(key, time);
         }
+        return true;
     }
 
     @Override
     public boolean hset(String key, String item, Object value) {
-        try {
-            redisTemplate.opsForHash().put(key, item, value);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForHash().put(key, item, value);
+        return true;
     }
 
     @Override
     public boolean hset(String key, String item, Object value, long time) {
-        try {
-            redisTemplate.opsForHash().put(key, item, value);
-            if (time > 0) {
-                expire(key, time);
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        redisTemplate.opsForHash().put(key, item, value);
+        if (time > 0) {
+            expire(key, time);
         }
+        return true;
     }
 
     @Override
@@ -195,228 +159,127 @@ public class AppRedisCacheManager implements IGlobalCache {
 
     @Override
     public Set<Object> sGet(String key) {
-        try {
-            return redisTemplate.opsForSet().members(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return redisTemplate.opsForSet().members(key);
     }
 
     @Override
     public boolean sHasKey(String key, Object value) {
-        try {
-            return redisTemplate.opsForSet().isMember(key, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        return redisTemplate.opsForSet().isMember(key, value);
     }
 
     @Override
     public long sSet(String key, Object... values) {
-        try {
-            return redisTemplate.opsForSet().add(key, values);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return redisTemplate.opsForSet().add(key, values);
     }
 
     @Override
     public long sSetAndTime(String key, long time, Object... values) {
-        try {
-            Long count = redisTemplate.opsForSet().add(key, values);
-            if (time > 0) {
-                expire(key, time);
-            }
-            return count;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
+        Long count = redisTemplate.opsForSet().add(key, values);
+        if (time > 0) {
+            expire(key, time);
         }
+        return count;
     }
 
     @Override
     public long sGetSetSize(String key) {
-        try {
-            return redisTemplate.opsForSet().size(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return redisTemplate.opsForSet().size(key);
     }
 
     @Override
     public long setRemove(String key, Object... values) {
-        try {
-            Long count = redisTemplate.opsForSet().remove(key, values);
-            return count;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return redisTemplate.opsForSet().remove(key, values);
     }
 
     @Override
     public List<Object> lGet(String key, long start, long end) {
-        try {
-            return redisTemplate.opsForList().range(key, start, end);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return redisTemplate.opsForList().range(key, start, end);
     }
 
     @Override
     public long lGetListSize(String key) {
-        try {
-            return redisTemplate.opsForList().size(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return redisTemplate.opsForList().size(key);
     }
 
     @Override
     public Object lGetIndex(String key, long index) {
-        try {
-            return redisTemplate.opsForList().index(key, index);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return redisTemplate.opsForList().index(key, index);
     }
 
     @Override
     public boolean lSetAll(String key, List<Object> value) {
-        try {
-            redisTemplate.opsForList().leftPushAll(key, value);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForList().leftPushAll(key, value);
+        return true;
     }
 
     @Override
     public boolean lSet(String key, Object value) {
-        try {
-            redisTemplate.opsForList().leftPushIfPresent(key, value);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForList().leftPushIfPresent(key, value);
+        return true;
     }
 
     @Override
     public boolean lSet(String key, Object value, long time) {
-        try {
-            redisTemplate.opsForList().leftPush(key, value);
-            if (time > 0) {
-                expire(key, time);
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        redisTemplate.opsForList().leftPush(key, value);
+        if (time > 0) {
+            expire(key, time);
         }
+        return true;
 
     }
 
     @Override
     public boolean lSetAll(String key, List<Object> value, long time) {
-        try {
-            redisTemplate.opsForList().leftPushAll(key, value);
-            if (time > 0)
-                expire(key, time);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForList().leftPushAll(key, value);
+        if (time > 0)
+            expire(key, time);
+        return true;
     }
 
     @Override
     public boolean rSet(String key, Object value) {
-        try {
-            redisTemplate.opsForList().rightPush(key, value);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForList().rightPush(key, value);
+        return true;
     }
 
     @Override
     public boolean rSet(String key, Object value, long time) {
-        try {
-            redisTemplate.opsForList().rightPush(key, value);
-            if (time > 0) {
-                expire(key, time);
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        redisTemplate.opsForList().rightPush(key, value);
+        if (time > 0) {
+            expire(key, time);
         }
+        return true;
 
     }
 
     @Override
     public boolean rSetAll(String key, List<Object> value) {
-        try {
-            redisTemplate.opsForList().rightPushAll(key, value);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForList().rightPushAll(key, value);
+        return true;
 
     }
 
     @Override
     public boolean rSetAll(String key, List<Object> value, long time) {
-        try {
-            redisTemplate.opsForList().rightPushAll(key, value);
-            if (time > 0)
-                expire(key, time);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForList().rightPushAll(key, value);
+        if (time > 0)
+            expire(key, time);
+        return true;
     }
 
     @Override
     public boolean lUpdateIndex(String key, long index, Object value) {
-        try {
-            redisTemplate.opsForList().set(key, index, value);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        redisTemplate.opsForList().set(key, index, value);
+        return true;
     }
 
     @Override
     public long lRemove(String key, long count, Object value) {
-        try {
-            Long remove = redisTemplate.opsForList().remove(key, count, value);
-            return remove;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return redisTemplate.opsForList().remove(key, count, value);
     }
 
     @Override
     public void rangeRemove(String key, Long stard, Long end) {
-        try {
-            redisTemplate.opsForList().trim(key, stard, end);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        redisTemplate.opsForList().trim(key, stard, end);
     }
 }

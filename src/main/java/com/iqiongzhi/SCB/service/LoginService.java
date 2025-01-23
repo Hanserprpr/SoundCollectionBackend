@@ -225,20 +225,22 @@ public class LoginService {
      * @return ResponseEntity<Result>
      */
     private ResponseEntity<Result> getToken(String id) {
-        try{
-            String refreshToken = jwtUtil.getToken(id,JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
+        String token;
+        String refreshToken;
+        try {
+            refreshToken = jwtUtil.getToken(id, JWTUtil.REFRESH_EXPIRE_TIME, REFRESH_SECRET_KEY);
 
-            String token = jwtUtil.getToken(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
+            token = jwtUtil.getToken(id, JWTUtil.EXPIRE_TIME, JWTUtil.SECRET_KEY);
 
             Map<String, String> tokenMap = new HashMap<>();
             tokenMap.put("accessToken", token);
             tokenMap.put("refreshToken", refreshToken);
-
             userMapper.updateLastLoginTime(Integer.parseInt(id));
 
             return ResponseUtil.build(Result.success(tokenMap, "登陆成功"));
-        } catch (Exception e){
-            return ResponseUtil.build(Result.error(400, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseUtil.build(Result.error(500, e.getMessage()));
         }
     }
+
 }

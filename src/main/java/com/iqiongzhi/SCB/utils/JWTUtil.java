@@ -45,21 +45,25 @@ public class JWTUtil {
     public static final int REFRESH_EXPIRE_TIME = 2 * 60 *60;//RefreshToken过期时间
 
     //生成token
-    public String getToken(String accountId, int expireTime, String key) throws UnsupportedEncodingException {
-        Map<String, String> map = new HashMap<>();
-        map.put("user_id", accountId);
-        //获取时间，设置token过期时间
-        Calendar instance = Calendar.getInstance();
-        instance.add(Calendar.SECOND, expireTime);
+    public String getToken(String accountId, int expireTime, String key) {
+        try {
+            Map<String, String> map = new HashMap<>();
+            map.put("user_id", accountId);
+            //获取时间，设置token过期时间
+            Calendar instance = Calendar.getInstance();
+            instance.add(Calendar.SECOND, expireTime);
 
-        //JWT添加payload
-        JWTCreator.Builder builder = JWT.create();
-        map.forEach(builder::withClaim);
+            //JWT添加payload
+            JWTCreator.Builder builder = JWT.create();
+            map.forEach(builder::withClaim);
 
-        //JWT过期时间 + signature
-        String token = builder.withExpiresAt(instance.getTime()).sign(Algorithm.HMAC256(key));
-        redis.set(token, "1", expireTime);
-        return token;
+            //JWT过期时间 + signature
+            String token = builder.withExpiresAt(instance.getTime()).sign(Algorithm.HMAC256(key));
+            redis.set(token, "1", expireTime);
+            return token;
+        } catch (Exception e) {
+            throw new RuntimeException("生成Token失败");
+        }
     }
 
 
