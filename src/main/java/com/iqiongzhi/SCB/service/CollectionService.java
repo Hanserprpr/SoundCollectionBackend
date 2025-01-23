@@ -21,7 +21,7 @@ public class CollectionService {
     public ResponseEntity<Result> collect(String userId, String soundId) {
         try {
             collectionMapper.collect(userId, soundId);
-            return ResponseEntity.ok(Result.success(null, "添加收藏成功"));
+            return ResponseUtil.build(Result.ok());
         } catch (DuplicateKeyException e) {
             return ResponseUtil.build(Result.error(409, "已经收藏过了"));
         } catch (DataIntegrityViolationException e) {
@@ -41,5 +41,18 @@ public class CollectionService {
             return ResponseUtil.build(Result.error(400, "获取收藏失败" + e));
         }
     }
-    
+
+    public ResponseEntity<Result> delete(String userId, String soundId) {
+        try {
+            int rowsAffected = collectionMapper.delete(userId, soundId);
+            if (rowsAffected == 0) {
+                throw new DataIntegrityViolationException("收藏不存在");
+            }
+            return ResponseUtil.build(Result.ok());
+        } catch (DataIntegrityViolationException e) {
+            return ResponseUtil.build(Result.error(404, "该收藏不存在"));
+        } catch (Exception e) {
+            return ResponseUtil.build(Result.error(400, "删除收藏失败"));
+        }
+    }
 }

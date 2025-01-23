@@ -1,10 +1,7 @@
 package com.iqiongzhi.SCB.mapper;
 
 import com.iqiongzhi.SCB.data.po.Sound;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -19,4 +16,7 @@ public interface CollectionMapper {
     List<Integer> getCollectedSound(String userId, @Param("offset") int offset, @Param("limit") int limit);
 
     List<Sound> getCollectedSoundList(@Param("list") List<Integer> ids);
+
+    @Delete("delete from collections where user_id=#{userId} and sound_id=#{soundId}")
+    int delete(String userId, String soundId);
 }

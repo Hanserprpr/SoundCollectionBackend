@@ -41,4 +41,16 @@ public class CollectionController {
         String userId = (String) request.getAttribute("userId");
         return collectionService.collections(userId, page, size);
     }
+
+    /**
+     * 删除收藏
+     * @param soundId 声音id
+     * @return 删除结果
+     */
+    @Auth
+    @DeleteMapping("/delete/{soundId}")
+    public ResponseEntity<Result> delete(@PathVariable String soundId) {
+        String userId = (String) request.getAttribute("userId");
+        return collectionService.delete(userId, soundId);
+    }
 }
