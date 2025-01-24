@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,17 @@ public class GlobalExceptionHandler {
         log.error("参数非法: {}", ex.getMessage(), ex);
         return ResponseUtil.build(Result.error(400, "非法参数: " + ex.getMessage()));
     }
+
+    /**
+     * 捕获参数类型不匹配异常
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Result> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        log.error("参数类型不匹配: 参数名={}, 期望类型={}, 异常信息={}",
+                ex.getName(), ex.getRequiredType(), ex.getMessage(), ex);
+        return ResponseUtil.build(Result.error(400, "参数类型不匹配: " + ex.getName()));
+    }
+
 
     /**
      * 捕获所有其他异常
