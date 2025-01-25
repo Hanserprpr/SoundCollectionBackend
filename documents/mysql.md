@@ -223,6 +223,7 @@ CREATE TABLE collections (
 | **title**       | `VARCHAR(100) NOT NULL`      | 非空                                    | 合集的标题             |
 | **description** | `TEXT`                       | 无特殊约束                               | 合集的描述信息          |
 | **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 合集创建时间           |
+| **updated_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`  | 自动更新为当前时间 | 合集最后一次信息更新时间  |
 
 ---
 
@@ -235,6 +236,7 @@ CREATE TABLE playlists (
     title VARCHAR(100) NOT NULL COMMENT '合集的标题',
     description TEXT COMMENT '合集的描述信息',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '合集创建时间',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '合集最后一次信息更新时间',
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='声音合集表';
 ```
