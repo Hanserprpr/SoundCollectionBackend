@@ -34,4 +34,13 @@ public class PlaylistService {
         playlistMapper.updateEditTime(playlist.getId());
         return ResponseUtil.build(Result.ok());
     }
+
+    public ResponseEntity<Result> delPlaylist(String userId, String playlistId) {
+        String id = playlistMapper.getOwner(Integer.valueOf(playlistId));
+        if (!userId.equals(id)) {
+            return ResponseUtil.build(Result.error(403, "无权限"));
+        }
+        playlistMapper.delPlaylist(playlistId);
+        return ResponseUtil.build(Result.ok());
+    }
 }

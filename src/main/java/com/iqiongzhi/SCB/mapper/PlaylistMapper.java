@@ -1,10 +1,7 @@
 package com.iqiongzhi.SCB.mapper;
 
 import com.iqiongzhi.SCB.data.po.Playlist;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -22,5 +19,8 @@ public interface PlaylistMapper {
     void editPlaylist(Playlist playlist);
     @Update("update playlists set updated_at = now() where id = #{id}")
     void updateEditTime(Integer id);
+
+    @Delete("delete from playlists where id = #{id}")
+    void delPlaylist(String id);
 }
 

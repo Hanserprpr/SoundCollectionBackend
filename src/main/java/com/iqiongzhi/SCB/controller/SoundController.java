@@ -37,7 +37,7 @@ public class SoundController {
      * @return 删除结果
      */
     @Auth
-    @PostMapping("/del")
+    @DeleteMapping("/del")
     public ResponseEntity<Result> delSound(@RequestParam String soundId) {
         String userId = (String) request.getAttribute("userId");
         return soundService.delSound(userId, soundId);

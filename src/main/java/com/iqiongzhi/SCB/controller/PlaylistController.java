@@ -4,9 +4,9 @@ import com.iqiongzhi.SCB.annotation.Auth;
 import com.iqiongzhi.SCB.data.po.Playlist;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.service.PlaylistService;
-import com.iqiongzhi.SCB.service.SignupService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,5 +57,17 @@ public class PlaylistController {
     public ResponseEntity<Result> editPlaylist(@Valid @RequestBody Playlist playlist) {
         String userId = (String) request.getAttribute("userId");
         return playlistService.editPlaylist(userId, playlist);
+    }
+
+    /**
+     * 删除播放列表
+     * @param playlistId 播放列表id
+     * @return 删除结果
+     */
+    @Auth
+    @DeleteMapping("/del")
+    public ResponseEntity<Result> delPlaylist(@RequestParam String playlistId) {
+        String userId = (String) request.getAttribute("userId");
+        return playlistService.delPlaylist(userId, playlistId);
     }
 }
