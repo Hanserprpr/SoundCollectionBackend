@@ -70,4 +70,28 @@ public class PlaylistController {
         String userId = (String) request.getAttribute("userId");
         return playlistService.delPlaylist(userId, playlistId);
     }
+
+    /**
+     * 获取播放列表中的音频
+     * @param playlistId 播放列表id
+     * @return 音频信息
+     */
+    @Auth
+    @GetMapping("/getPlaylistById")
+    public ResponseEntity<Result> getPlaylistById(@RequestParam String playlistId) {
+        return playlistService.getPlaylistById(playlistId);
+    }
+
+    /**
+     * 向播放列表中添加音频
+     * @param playlistId 播放列表id
+     * @param soundId 音频id
+     * @return 添加结果
+     */
+    @Auth
+    @PostMapping("/addSound")
+    public ResponseEntity<Result> addSound(@RequestParam int playlistId, @RequestParam int soundId) {
+        String userId = (String) request.getAttribute("userId");
+        return playlistService.addSound(Integer.parseInt(userId), playlistId, soundId);
+    }
 }

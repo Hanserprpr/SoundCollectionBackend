@@ -22,5 +22,7 @@ public interface SoundMapper {
     @Delete("delete from sound where id=#{id}")
     void delSound(String soundId);
 
+    List<Sound> getSoundsByIds(@Param("soundIds") List<Long> soundIds);
+
 
 }

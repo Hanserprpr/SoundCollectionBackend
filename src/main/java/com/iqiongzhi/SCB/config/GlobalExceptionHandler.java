@@ -44,6 +44,13 @@ public class GlobalExceptionHandler {
     }
 
 
+    // 捕获外键约束失败异常
+    @ExceptionHandler(java.sql.SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<Result> handleSQLIntegrityConstraintViolationException(java.sql.SQLIntegrityConstraintViolationException ex) {
+        log.error("外键约束失败: {}", ex.getMessage(), ex);
+        return ResponseUtil.build(Result.error(400, "操作失败，可能由于关联数据不存在或已被删除"));
+    }
+
     // 捕获主键冲突
     @ExceptionHandler(org.springframework.dao.DuplicateKeyException.class)
     public ResponseEntity<Result> handleDuplicateKeyException(org.springframework.dao.DuplicateKeyException ex) {
@@ -81,6 +88,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(org.springframework.dao.DataAccessException.class)
     public ResponseEntity<Result> handleDataAccessException(org.springframework.dao.DataAccessException ex) {
         log.error("数据访问异常: {}", ex.getMessage(), ex);
+
+        // 检查是否包含特定的根本原因
+        Throwable cause = ex.getCause();
+        if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+            log.error("外键约束失败: {}", cause.getMessage(), cause);
+            return ResponseUtil.build(Result.error(400, "操作失败，可能由于关联数据不存在或已被删除"));
+        }
+
+        if (cause instanceof java.sql.SQLDataException) {
+            log.error("数据类型错误: {}", cause.getMessage(), cause);
+            return ResponseUtil.build(Result.error(400, "数据类型错误，请检查输入"));
+        }
+
+        // 如果不是特定异常，返回通用数据库错误
         return ResponseUtil.build(Result.error(500, "数据库操作失败，请稍后再试"));
     }
 
