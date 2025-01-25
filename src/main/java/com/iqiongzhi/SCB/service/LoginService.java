@@ -118,15 +118,12 @@ public class LoginService {
             loginDTO = JSON.parseObject(html, LoginDTO.class);
 //            如果成功就不会有errcode,此处是验证是否成功
             if(null == loginDTO.errcode) {
-                Result re  =  Result.error(Integer.valueOf(loginDTO.errcode), loginDTO.errmsg);
+                Result re  =  Result.error(400, loginDTO.errmsg);
                 return ResponseUtil.build(re);
             }
         } catch (Exception e) {
             System.out.println("wx login succeed");
         }
-        HashMap<String, String> map = new HashMap<>();
-        map.put("openid",loginDTO.openid);
-        map.put("session_key",loginDTO.session_key);
         if(!isWxExisted(loginDTO.openid)){
             userMapper.addWXUser(loginDTO.openid);
         }

@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface SoundMapper {
     @Select("select id, user_id, title, description, category, file_url, cover_url, location, created_at, updated_at from sound where user_id=#{Id}")
-    List<Sound> getMyVoices(String userId);
+    List<Sound> getMySounds(String userId);
     @Select("select user_id from sound where id=#{soundId}")
     String getSoundOwner(String soundId);
     @Select("select * from sound where id=#{soundId}")

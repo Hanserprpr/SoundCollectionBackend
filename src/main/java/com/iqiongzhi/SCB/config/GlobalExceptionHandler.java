@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -39,6 +41,47 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Result> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error("参数非法: {}", ex.getMessage(), ex);
         return ResponseUtil.build(Result.error(400, "非法参数: " + ex.getMessage()));
+    }
+
+
+    // 捕获主键冲突
+    @ExceptionHandler(org.springframework.dao.DuplicateKeyException.class)
+    public ResponseEntity<Result> handleDuplicateKeyException(org.springframework.dao.DuplicateKeyException ex) {
+        log.error("主键冲突: {}", ex.getMessage(), ex);
+        return ResponseUtil.build(Result.error(400, "数据冲突，相关记录已存在"));
+    }
+
+    // 捕获数据类型不匹配
+    @ExceptionHandler(java.sql.SQLDataException.class)
+    public ResponseEntity<Result> handleSQLDataException(java.sql.SQLDataException ex) {
+        log.error("数据类型不匹配: {}", ex.getMessage(), ex);
+        return ResponseUtil.build(Result.error(400, "数据类型错误，请检查输入"));
+    }
+
+    // 捕获结果集为空
+    @ExceptionHandler(org.springframework.dao.EmptyResultDataAccessException.class)
+    public ResponseEntity<Result> handleEmptyResultDataAccessException(org.springframework.dao.EmptyResultDataAccessException ex) {
+        log.error("结果集为空: {}", ex.getMessage(), ex);
+        return ResponseUtil.build(Result.error(404, "未找到相关数据"));
+    }
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Result> handleValidationException(MethodArgumentNotValidException ex) {
+        // 获取第一个字段错误信息
+        FieldError fieldError = ex.getBindingResult().getFieldError();
+        String message = (fieldError != null) ? fieldError.getDefaultMessage() : "参数校验失败";
+
+        log.error("参数校验异常: {}", message, ex);
+
+        return ResponseUtil.build(Result.error(400, message));
+    }
+
+    // 捕获通用数据访问异常
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    public ResponseEntity<Result> handleDataAccessException(org.springframework.dao.DataAccessException ex) {
+        log.error("数据访问异常: {}", ex.getMessage(), ex);
+        return ResponseUtil.build(Result.error(500, "数据库操作失败，请稍后再试"));
     }
 
     /**

@@ -5,6 +5,7 @@ import com.iqiongzhi.SCB.data.po.Sound;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.service.SoundService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class SoundController {
      */
     @Auth
     @PostMapping("/upload")
-    public ResponseEntity<Result> upload(@RequestBody Sound sound) {
+    public ResponseEntity<Result> upload(@Valid @RequestBody Sound sound) {
         String userId = (String) request.getAttribute("userId");
         return soundService.upload(userId, sound);
     }

@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CollectionService {
@@ -35,6 +34,9 @@ public class CollectionService {
         try {
             int offset = (page - 1) * size;
             List<Integer> soundIds = collectionMapper.getCollectedSound(userId, offset, size);
+            if (soundIds.isEmpty()) {
+                return ResponseUtil.build(Result.success(null, "你还没有收藏QAQ"));
+            }
             List<Sound> result = collectionMapper.getCollectedSoundList(soundIds);
             return ResponseUtil.build(Result.success(result, "获取收藏成功"));
         } catch (Exception e) {

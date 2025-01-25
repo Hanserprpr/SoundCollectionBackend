@@ -66,6 +66,6 @@ public class UserCenterService {
      * @return 用户上传的声音
      */
     public ResponseEntity<Result> getMyVoices(String userId) {
-        return ResponseUtil.build(Result.success(soundMapper.getMyVoices(userId), "获取成功"));
+        return ResponseUtil.build(Result.success(soundMapper.getMySounds(userId), "获取成功"));
     }
 }
