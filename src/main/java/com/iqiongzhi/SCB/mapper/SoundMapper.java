@@ -16,7 +16,7 @@ public interface SoundMapper {
     @Select("select id, user_id, title, description, category, cover_url, location from sound where category=#{category}  LIMIT #{offset}, #{limit}")
     List<Sound> getSoundList(@Param("category") String category, @Param("offset") int offset, @Param("limit") int limit);
 
-    @Insert("insert into sound (user_id, title, description, category, file_url, cover_url, location) values (#{userId}, #{title}, #{description}, #{category}, #{fileUrl}, #{coverUrl}, #{location})")
+    @Insert("insert into sound (user_id, title, description, category, file_url, cover_url, location, duration) values (#{userId}, #{title}, #{description}, #{category}, #{fileUrl}, #{coverUrl}, #{location}, #{duration})")
     void insertSound(Sound sound);
 
     @Delete("delete from sound where id=#{id}")

@@ -7,12 +7,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("sound")
 public class Sound {
+    @Id
     @TableId(type = IdType.AUTO)
     private Integer id;
 
@@ -32,6 +34,8 @@ public class Sound {
     private String coverUrl;
 
     private String location;
+
+    private String duration;
 
     private String createdAt;
 
