@@ -24,5 +24,6 @@ public interface SoundMapper {
 
     List<Sound> getSoundsByIds(@Param("soundIds") List<Long> soundIds);
 
-
+    @Update("update sound set title=#{title}, description=#{description}, category=#{category}, file_url = #{fileUrl}, cover_url=#{coverUrl}, location=#{location} where id=#{id}")
+    void updateSound(Sound sound);
 }

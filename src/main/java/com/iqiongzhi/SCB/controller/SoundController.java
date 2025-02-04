@@ -32,6 +32,18 @@ public class SoundController {
     }
 
     /**
+     * 更新声音数据
+     * @param sound 音频信息
+     * @return 更新结果
+     */
+    @Auth
+    @PutMapping("/update")
+    public ResponseEntity<Result> update(@Valid @RequestBody Sound sound) {
+        String userId = (String) request.getAttribute("userId");
+        return soundService.update(userId, sound);
+    }
+
+    /**
      * 删除声音数据
      * @param soundId 音频id
      * @return 删除结果
