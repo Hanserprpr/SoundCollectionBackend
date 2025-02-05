@@ -60,6 +60,7 @@ CREATE TABLE user (
     student_id CHAR(20) UNIQUE COMMENT '学号',
     bio TEXT COMMENT '个人简介',
     avatar_url VARCHAR(255) COMMENT '头像URL地址',
+    bgUrl VARCHAR(255) COMMENT '背景图URL地址',
     level TINYINT DEFAULT 1 COMMENT '用户等级',
     permission TINYINT DEFAULT 2 COMMENT '用户权限等级',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',

@@ -48,6 +48,9 @@ public class UserSQLProvider {
             if (user.getAvatarUrl() != null) {
                 SET("avatar_url = #{user.avatarUrl}");
             }
+            if (user.getBgUrl() != null) {
+                SET("bgurl = #{user.bgUrl}");
+            }
             SET("updated_at = now()");
             WHERE("id = #{id}");
         }}.toString();

@@ -32,6 +32,9 @@ public class User {
 
     private String avatarUrl;
 
+    // background url
+    private String bgUrl;
+
     private String createdAt;
 
     private String updatedAt;

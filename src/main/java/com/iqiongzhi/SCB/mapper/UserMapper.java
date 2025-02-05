@@ -11,7 +11,7 @@ public interface UserMapper {
 
     @Select("select id from user where email=#{email}")
     Integer findUserByEmail(String email);
-    @Select("select id, username, email, wechat, bio, avatar_url, created_at, updated_at, last_login_at, status from user where id=#{id}")
+    @Select("select id, username, email, wechat, bio, avatar_url, bgurl, created_at, updated_at, last_login_at, status from user where id=#{id}")
     User findUserById(String id);
     @Select("select username from user where wechat=#{openid}")
     List<User> findUserByOpenId(String openid);
@@ -24,7 +24,7 @@ public interface UserMapper {
 
     @Insert("insert into user (username, password, student_id) values (#{username}, #{password}, #{SDUId})")
     void addUser(String username, String password, String SDUId);
-    @Insert("insert into user (wechat) values (#{openid})")
+    @Insert("insert into user (username, wechat) values (CONCAT('wx_', #{openid}), #{openid})")
     void addWXUser(String openid);
     @Insert("insert into user (username, email, password) values (#{email}, #{email}, #{password})")
     void addEmailUser(String email, String password);
