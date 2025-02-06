@@ -14,7 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/self")
 public class UserCenterController {
     @Autowired
     UserCenterService userCenterService;
