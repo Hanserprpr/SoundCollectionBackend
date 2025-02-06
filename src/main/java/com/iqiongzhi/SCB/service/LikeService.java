@@ -29,6 +29,7 @@ public class LikeService {
     }
 
 
+
     public ResponseEntity<Result> likesCnt(String soundId) {
         try{
             int cnt=likeMapper.soundCnt(soundId);

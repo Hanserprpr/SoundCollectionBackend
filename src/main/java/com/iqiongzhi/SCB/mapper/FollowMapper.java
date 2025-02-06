@@ -16,6 +16,7 @@ public interface FollowMapper {
     @Select("select count(*) from follows where following=#{id}")
     int getFansCount(String id);
 
+
     /**
      * 判断是否关注
      * @param follower 关注者

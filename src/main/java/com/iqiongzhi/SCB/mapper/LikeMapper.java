@@ -13,6 +13,7 @@ public interface LikeMapper {
     List<Sound> getLikedSoundList(@Param("list") List<Integer> ids);
     */
 
+
     @Select("select count(*) from likes where sound_id=#{soundId}")
     int soundCnt(String soundId);
 

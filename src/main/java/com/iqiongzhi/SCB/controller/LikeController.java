@@ -29,6 +29,7 @@ public class LikeController {
         return likeService.like(userId, soundId);
     }
 
+
     /**
      * 获取声音点赞数
      * @param soundId 声音id
