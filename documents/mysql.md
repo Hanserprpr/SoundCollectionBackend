@@ -300,3 +300,35 @@ CREATE TABLE search_logs (
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='搜索记录表';
 ```
+
+## 关注表(follows)
+
+关注表用于存储用户关注记录
+
+---
+
+### 表结构
+
+| 字段名        | 数据类型                           | 约束                                    | 描述                           |
+|--------------|----------------------------------|-----------------------------------------|--------------------------------|
+| id           | INT AUTO_INCREMENT PRIMARY KEY   | 主键，自动递增                           | 关注记录的唯一ID              |
+| follower     | INT NOT NULL                     | 外键，关联 `users(id)`，`ON DELETE CASCADE` | 关注者（发起关注的用户ID）    |
+| following    | INT NOT NULL                     | 外键，关联 `users(id)`，`ON DELETE CASCADE` | 被关注者（被关注的用户ID）    |
+| created_at   | TIMESTAMP DEFAULT CURRENT_TIMESTAMP | 自动生成，默认当前时间                   | 关注时间                      |
+| UNIQUE KEY (follower, following) | - | 保证 `follower` 和 `following` 组合唯一 | 防止重复关注 |
+
+---
+
+### 创建指令
+
+```sql
+CREATE TABLE follows (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    follower INT NOT NULL,  -- 关注者（用户A）
+    following INT NOT NULL, -- 被关注者（用户B）
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (follower) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (following) REFERENCES user(id) ON DELETE CASCADE,
+    UNIQUE KEY (follower, following) -- 防止重复关注
+);
+```
