@@ -29,7 +29,6 @@ public class FollowController {
         return followService.follow(userId, following);
     }
 
-
     /**
      * 取消关注
      * @param following 关注对象
