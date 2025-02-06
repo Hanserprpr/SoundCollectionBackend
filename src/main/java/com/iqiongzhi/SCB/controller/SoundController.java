@@ -63,6 +63,7 @@ public class SoundController {
     @Auth
     @GetMapping("/getSound")
     public ResponseEntity<Result> getSound(@RequestParam String soundId) {
+        soundService.increaseViews(Integer.parseInt(soundId));
         return soundService.getSound(soundId);
     }
 

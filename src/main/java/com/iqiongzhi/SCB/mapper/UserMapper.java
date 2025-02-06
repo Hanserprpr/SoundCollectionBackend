@@ -11,7 +11,7 @@ public interface UserMapper {
 
     @Select("select id from user where email=#{email}")
     Integer findUserByEmail(String email);
-    @Select("select id, username, email, wechat, bio, avatar_url, bgurl, created_at, updated_at, last_login_at, status from user where id=#{id}")
+    @Select("select id, username, email, student_id, wechat, bio, avatar_url, bgurl, created_at, updated_at, last_login_at, status from user where id=#{id}")
     User findUserById(String id);
     @Select("select username from user where wechat=#{openid}")
     List<User> findUserByOpenId(String openid);
@@ -21,6 +21,8 @@ public interface UserMapper {
     String getPasswdByEmail(String email);
     @SelectProvider(type = UserSQLProvider.class, method = "buildGetUserIdQuery")
     Integer getUserId(@Param("id") String id, @Param("type") String type);
+    @Select("select id, username, email, bio, avatar_url, bgurl, last_login_at, status from user where id=#{id}")
+    User getUserInfo(String id);
 
     @Insert("insert into user (username, password, student_id) values (#{username}, #{password}, #{SDUId})")
     void addUser(String username, String password, String SDUId);

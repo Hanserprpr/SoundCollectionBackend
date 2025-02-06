@@ -3,11 +3,12 @@ package com.iqiongzhi.SCB.service;
 import com.iqiongzhi.SCB.data.po.Sound;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.mapper.SoundMapper;
-import com.iqiongzhi.SCB.mapper.SoundRepository;
+import com.iqiongzhi.SCB.data.repository.SoundRepository;
 import com.iqiongzhi.SCB.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SoundService {
@@ -68,5 +69,10 @@ public class SoundService {
         } catch (Exception e) {
             return ResponseUtil.build(Result.error(400, "更新失败" + e));
         }
+    }
+
+    @Transactional
+    public void increaseViews(Integer soundId) {
+        soundMapper.increaseViews(soundId);
     }
 }

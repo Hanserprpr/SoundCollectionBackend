@@ -26,4 +26,7 @@ public interface SoundMapper {
 
     @Update("update sound set title=#{title}, description=#{description}, category=#{category}, file_url = #{fileUrl}, cover_url=#{coverUrl}, location=#{location} where id=#{id}")
     void updateSound(Sound sound);
+
+    @Update("UPDATE sound SET views = views + 1 WHERE id = #{soundId}")
+    void increaseViews(Integer soundId);
 }

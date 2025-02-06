@@ -25,7 +25,7 @@ public class UserService {
      * @return 用户信息
      */
     public ResponseEntity<Result> getUser(String id, String userId) {
-        User user = userMapper.findUserById(id);
+        User user = userMapper.getUserInfo(id);
         if (user == null) {
             return ResponseUtil.build(Result.error(404, "用户不存在"));
         }
