@@ -17,7 +17,7 @@ public interface LikeMapper {
     @Select("select count(*) from likes where sound_id=#{soundId}")
     int soundCnt(String soundId);
 
-    @Insert("insert into likes (user_id, sound_id, created_at) values (#{user_id}, #{sound_id}, now())")
+    @Insert("insert into likes (user_id, sound_id) values (#{user_id}, #{sound_id})")
     void addLike(String user_id, String sound_id);
 
     @Delete("delete from likes where user_id=#{userId} and sound_id=#{soundId}")
