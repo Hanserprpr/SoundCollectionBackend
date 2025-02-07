@@ -1,9 +1,11 @@
 package com.iqiongzhi.SCB.mapper;
 
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+@Mapper
 public interface PrivacyMapper {
     @Insert("insert into privacy_settings (user_id) values (#{userId})")
     void insertPrivacy(int userId);
@@ -29,10 +31,10 @@ public interface PrivacyMapper {
     @Select("select show_follows from privacy_settings where user_id=#{userId}")
     Integer getFollowsPriById(String userId);
 
-    @Select("select show_fans from privacy_settings where username=#{username}")
+    @Select("select show_fans from privacy_settings where id=#{id}")
     Integer getFansPriById(String userId);
 
-    @Select("select show_collections from privacy_settings where username=#{username}")
+    @Select("select show_collections from privacy_settings where id=#{id}")
     Integer getCollectionsPriById(String userId);
 
 
