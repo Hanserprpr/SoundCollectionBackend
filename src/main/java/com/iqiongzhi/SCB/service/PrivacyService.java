@@ -46,7 +46,7 @@ public class PrivacyService {
 
     public ResponseEntity<Result> displayFollows(String userId) {
         if(followMapper.getFollowsPriById(userId)==0){
-            followMapper.hideFollows(userId);
+            followMapper.displayFollows(userId);
             return ResponseUtil.build(Result.ok());
         } else {
             return ResponseUtil.build(Result.error(400, "显示关注失败qwq"));

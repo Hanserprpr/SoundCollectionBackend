@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Update;
 
 public interface PrivacyMapper {
     @Insert("insert into privacy_settings (user_id) values (#{userId})")
-    void insertPrivacy(String userId);
+    void insertPrivacy(int userId);
 
     @Update("update privacy_settings set show_follows=0 where user_id=#{userId} ")
     void hideFollows(String userId);
