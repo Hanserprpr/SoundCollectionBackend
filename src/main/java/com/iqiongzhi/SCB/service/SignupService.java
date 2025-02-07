@@ -1,6 +1,7 @@
 package com.iqiongzhi.SCB.service;
 
 import com.iqiongzhi.SCB.data.vo.Result;
+import com.iqiongzhi.SCB.mapper.PrivacyMapper;
 import com.iqiongzhi.SCB.mapper.UserMapper;
 import com.iqiongzhi.SCB.utils.EmailSender;
 import com.iqiongzhi.SCB.utils.BcryptUtils;
@@ -17,6 +18,8 @@ import java.util.HashMap;
 public class SignupService {
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    private PrivacyMapper privacyMapper;
 
     private final Map<String, Map<String, String>> ticketDataMap = new ConcurrentHashMap<>();
     @Autowired
@@ -64,6 +67,8 @@ public class SignupService {
             String email = data.get("email");
             String password = data.get("password");
             userMapper.addEmailUser(email, password);
+            int id = userMapper.getUserId(email, "email");
+            privacyMapper.insertPrivacy(id);
             ticketDataMap.remove(ticket);
             return ResponseUtil.build(Result.ok());
         } else {
