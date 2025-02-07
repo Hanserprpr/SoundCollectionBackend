@@ -3,7 +3,9 @@ package com.iqiongzhi.SCB.controller;
 import com.iqiongzhi.SCB.annotation.Auth;
 import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.data.vo.Result;
+import com.iqiongzhi.SCB.service.PrivacyService;
 import com.iqiongzhi.SCB.service.UserCenterService;
+
 import com.iqiongzhi.SCB.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,8 @@ public class UserCenterController {
     UserCenterService userCenterService;
     @Autowired
     private HttpServletRequest request;
-
+    @Autowired
+    PrivacyService privacyService;
     /**
      * 获取用户信息
      * @return 用户信息
@@ -72,5 +75,72 @@ public class UserCenterController {
         String userId = (String) request.getAttribute("userId");
         return userCenterService.getMyVoices(userId);
     }
+
+    /**
+     * 隐藏收藏
+     * @return 隐藏收藏结果
+     */
+    @Auth
+    @PostMapping("/privacy_collections/hide")
+    public ResponseEntity<Result> hideCollection() {
+        String userId = (String) request.getAttribute("userId");
+        return privacyService.hideCollections(userId);
+    }
+    /**
+     * 隐藏关注
+     * @return 隐藏关注结果
+     */
+    @Auth
+    @PostMapping("/privacy_follows/hide")
+    public ResponseEntity<Result> hideFollows() {
+        String userId = (String) request.getAttribute("userId");
+        return privacyService.hideFollows(userId);
+    }
+
+    /**
+     * 隐藏关注我的粉丝
+     * @return 隐藏粉丝结果
+     */
+    @Auth
+    @PostMapping("/privacy_fans/hide")
+    public ResponseEntity<Result> hideFans() {
+        String userId = (String) request.getAttribute("userId");
+        return privacyService.hideFans(userId);
+    }
+    /**
+     * 显示收藏
+     * @return 显示收藏结果
+     */
+    @Auth
+    @PostMapping("/privacy_collections/display")
+    public ResponseEntity<Result> displayCollection() {
+        String userId = (String) request.getAttribute("userId");
+        return privacyService.displayCollections(userId);
+    }
+    /**
+     * 显示关注
+     * @return 显示关注结果
+     */
+    @Auth
+    @PostMapping("/privacy_follows/display")
+    public ResponseEntity<Result> displayFollows() {
+        String userId = (String) request.getAttribute("userId");
+        return privacyService.displayFollows(userId);
+    }
+
+    /**
+     * 显示关注我的粉丝
+     * @return 显示粉丝结果
+     */
+    @Auth
+    @PostMapping("/privacy_fans/display")
+    public ResponseEntity<Result> displayFans() {
+        String userId = (String) request.getAttribute("userId");
+        return privacyService.displayFans(userId);
+    }
+
+
+
+
 
 }

@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface FollowMapper {
-    @Insert("insert into follows (follower, following, created_at) values (#{follower}, #{following}, now())")
+    @Insert("insert into follows (follower, following, created_at) values (#{follower}, #{following})")
     void addFollow(String follower, String following);
 
     @Delete("delete from follows where follower=#{follower} and following=#{following}")
