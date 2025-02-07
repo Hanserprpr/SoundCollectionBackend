@@ -88,6 +88,8 @@ CREATE TABLE user (
 | **file_url**    | `VARCHAR(255) NOT NULL`      | 非空                                    | 声音文件的存储URL       |
 | **cover_url**   | `VARCHAR(255)`               | 无特殊约束                               | 声音封面的图片URL       |
 | **location**    | `VARCHAR(100)`               | 无特殊约束                               | 声音上传时的位置信息    |
+| **duration** | `FLOAT` | 非空 | 声音时长 |
+| **views** | `INT DEFAULT 0` | 默认为0 | 播放量 |
 | **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 声音的上传时间          |
 | **updated_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP` | 自动更新为当前时间                       | 声音最后一次信息更新时间 |
 
@@ -105,6 +107,8 @@ CREATE TABLE sound (
     file_url VARCHAR(255) NOT NULL COMMENT '声音文件的存储URL',
     cover_url VARCHAR(255) COMMENT '声音封面的图片URL',
     location VARCHAR(100) COMMENT '声音上传时的位置信息',
+    duration FLOAT COMMENT '声音时长',
+    views INT DEFAULT 0 COMMENT '播放量',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '声音的上传时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '声音最后一次信息更新时间',
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
@@ -178,9 +182,9 @@ CREATE TABLE comments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评论表';
 ```
 
-## 收藏记录表 (collections)
+## 收藏夹表 (collections)
 
-收藏记录表用于存储用户对声音的收藏信息，包括收藏用户和对应的声音ID。
+收藏记录表用于存储用户的收藏夹信息，包括收藏标题和描述等。
 
 ---
 
@@ -188,10 +192,12 @@ CREATE TABLE comments (
 
 | 字段名          | 数据类型                     | 约束                                    | 描述                   |
 |------------------|------------------------------|-----------------------------------------|------------------------|
-| **id**          | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 收藏记录的唯一ID       |
-| **user_id**     | `INT NOT NULL`               | 外键，关联用户表,与sound_id唯一对应       | 收藏者的用户ID         |
-| **sound_id**    | `INT NOT NULL`               | 外键，关联声音表，与user_id唯一对应       | 被收藏的声音ID         |
-| **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 收藏时间               |
+| **id**          | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 收藏夹的唯一ID       |
+| **user_id**     | `INT NOT NULL`               | 外键，关联用户表                         | 创建收藏夹的用户ID       |
+| **title**       | `VARCHAR(100) NOT NULL`      | 非空                                    | 收藏夹的标题             |
+| **description** | `TEXT`                       | 无特殊约束                               | 收藏夹的描述信息          |
+| **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 收藏夹创建时间           |
+| **updated_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`  | 自动更新为当前时间 | 收藏夹最后一次信息更新时间  |
 
 ---
 
@@ -199,14 +205,44 @@ CREATE TABLE comments (
 
 ```sql
 CREATE TABLE collections (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '收藏记录的唯一ID',
-    user_id INT NOT NULL COMMENT '收藏者的用户ID',
-    sound_id INT NOT NULL COMMENT '被收藏的声音ID',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '收藏时间',
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_user_sound (user_id, sound_id) COMMENT '唯一约束，防止重复收藏'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏记录表';
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '收藏夹的唯一ID',
+    user_id INT NOT NULL COMMENT '创建收藏夹的用户ID',
+    title VARCHAR(100) NOT NULL COMMENT '收藏夹的标题',
+    description TEXT COMMENT '收藏夹的描述信息',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '收藏夹创建时间',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '收藏夹最后一次信息更新时间',
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏夹表';
+```
+
+## 收藏夹内容表 (collection_sounds)
+
+声音合集内容表用于存储每个声音合集中的声音信息。
+
+---
+
+### 表结构
+
+| 字段名          | 数据类型                     | 约束                                    | 描述                   |
+|------------------|------------------------------|-----------------------------------------|------------------------|
+| **id**          | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 记录的唯一ID           |
+| **collection_id** | `INT NOT NULL`               | 外键，关联收藏夹表                     | 所属收藏夹的ID       |
+| **sound_id**    | `INT NOT NULL`               | 外键，关联声音表                         | 收藏夹中的声音ID         |
+| **added_at**    | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 声音加入收藏夹的时间     |
+
+---
+
+### 创建指令
+
+```sql
+CREATE TABLE collection_sounds (
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '记录的唯一ID',
+    collection_id INT NOT NULL COMMENT '所属收藏夹的ID',
+    sound_id INT NOT NULL COMMENT '收藏夹中的声音ID',
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '声音加入收藏夹的时间',
+    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
+    FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏夹内容表';
 ```
 
 ## 声音合集表 (playlists)
@@ -325,10 +361,47 @@ CREATE TABLE search_logs (
 CREATE TABLE follows (
     id INT PRIMARY KEY AUTO_INCREMENT,
     follower INT NOT NULL COMMENT '关注者',  -- 关注者（用户A）
-    following INT NOT NULL COMMENT '关注者', -- 被关注者（用户B）
+    following INT NOT NULL COMMENT '被关注者', -- 被关注者（用户B）
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (follower) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (following) REFERENCES user(id) ON DELETE CASCADE,
     UNIQUE KEY (follower, following) -- 防止重复关注
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='关注表';
+```
+
+## 用户隐私设置表 (privacy_settings)
+
+用户隐私设置表用于存储用户的隐私偏好，包括 **关注列表、粉丝列表和收藏夹** 是否公开。
+
+---
+
+### 表结构
+
+| 字段名         | 数据类型                           | 约束                                    | 描述                          |
+|---------------|----------------------------------|-----------------------------------------|-------------------------------|
+| id            | INT AUTO_INCREMENT PRIMARY KEY   | 主键，自动递增                           | 记录的唯一 ID                 |
+| user_id       | INT NOT NULL                     | 外键，关联 `user(id)`，`ON DELETE CASCADE` | 用户 ID                      |
+| show_follows  | TINYINT(1) DEFAULT 1 NOT NULL    | 0：不公开，1：公开                        | 关注列表是否公开              |
+| show_fans     | TINYINT(1) DEFAULT 1 NOT NULL    | 0：不公开，1：公开                        | 粉丝列表是否公开              |
+| show_collections| TINYINT(1) DEFAULT 1 NOT NULL    | 0：不公开，1：公开                        | 收藏夹是否公开                |
+| created_at    | TIMESTAMP DEFAULT CURRENT_TIMESTAMP | 自动生成，默认当前时间                   | 设置创建时间                  |
+| updated_at    | TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 自动更新，记录最新修改时间 | 设置更新时间                  |
+| UNIQUE KEY (user_id) | - | 保证每个用户只有一条隐私设置记录 | 防止重复记录 |
+
+---
+
+### 创建指令
+
+```sql
+CREATE TABLE privacy_settings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL COMMENT '用户ID',
+    show_follows TINYINT(1) NOT NULL DEFAULT 1 COMMENT '关注列表是否公开（0：不公开，1：公开）',
+    show_fans TINYINT(1) NOT NULL DEFAULT 1 COMMENT '粉丝列表是否公开（0：不公开，1：公开）',
+    show_collections TINYINT(1) NOT NULL DEFAULT 1 COMMENT '收藏夹是否公开（0：不公开，1：公开）',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '设置创建时间',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '设置更新时间',
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    UNIQUE KEY (user_id) -- 每个用户只能有一条隐私设置
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户隐私设置表';
 ```
