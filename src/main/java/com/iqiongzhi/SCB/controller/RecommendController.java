@@ -44,11 +44,5 @@ public class RecommendController {
         return recommendService.getLatestSound(page, size);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<Result> searchSounds(@RequestParam String keyword,
-                                               @RequestParam(defaultValue = "1") int page,
-                                               @RequestParam(defaultValue = "10") int size) {
-        return recommendService.searchSound(keyword, page, size);
-    }
 
 }
