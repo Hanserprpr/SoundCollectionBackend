@@ -84,7 +84,8 @@ CREATE TABLE user (
 | **user_id**     | `INT NOT NULL`               | 外键，关联用户表                         | 上传该声音的用户ID      |
 | **title**       | `VARCHAR(100) NOT NULL`      | 非空                                    | 声音的标题             |
 | **description** | `TEXT`                       | 无特殊约束                               | 声音的描述信息          |
-| **category**    | `ENUM('自然声', '人声', '演奏', '合成') NOT NULL` | 非空                                    | 声音的分类             |
+| **category**    | `ENUM('自然声', '人声', '演奏', '合成', '其他') NOT NULL` | 非空                                    | 声音的分类             |
+| **tag** | `VARCHAR(255)` | 无特殊约束 | 用户自定义标签 |
 | **file_url**    | `VARCHAR(255) NOT NULL`      | 非空                                    | 声音文件的存储URL       |
 | **cover_url**   | `VARCHAR(255)`               | 无特殊约束                               | 声音封面的图片URL       |
 | **location**    | `VARCHAR(100)`               | 无特殊约束                               | 声音上传时的位置信息    |
@@ -103,7 +104,7 @@ CREATE TABLE sound (
     user_id INT NOT NULL COMMENT '上传该声音的用户ID',
     title VARCHAR(100) NOT NULL COMMENT '声音的标题',
     description TEXT COMMENT '声音的描述信息',
-    category ENUM('自然声', '人声', '演奏', '合成') NOT NULL COMMENT '声音的分类',
+    category ENUM('自然声', '人声', '演奏', '合成', '其他') NOT NULL COMMENT '声音的分类',
     file_url VARCHAR(255) NOT NULL COMMENT '声音文件的存储URL',
     cover_url VARCHAR(255) COMMENT '声音封面的图片URL',
     location VARCHAR(100) COMMENT '声音上传时的位置信息',
@@ -113,6 +114,60 @@ CREATE TABLE sound (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '声音最后一次信息更新时间',
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='声音表';
+```
+
+## 标签表 (tags)
+
+标签表用于存储用户自定义的标签信息，每个标签都有唯一的名称，并可用于分类或筛选内容。
+
+---
+
+### 表结构
+
+| 字段名         | 数据类型                          | 约束                                      | 描述                  |
+|---------------|---------------------------------|-------------------------------------------|-----------------------|
+| **id**        | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 标签的唯一 ID         |
+| **name**      | `VARCHAR(100) NOT NULL UNIQUE`  | 唯一索引，防止重复                        | 标签名称              |
+| **created_at**| `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                    | 标签创建时间          |
+
+---
+
+### 创建指令
+
+```sql
+CREATE TABLE tags (
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '标签的唯一 ID',
+    name VARCHAR(100) NOT NULL UNIQUE COMMENT '标签名称',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '标签创建时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='标签表';
+```
+
+## 标签关联表 (item_tags)
+
+标签关联表用于存储标签与声音的关联关系，每条记录表示一个对象与一个标签的绑定关系。
+
+---
+
+### 表结构
+
+| 字段名      | 数据类型      | 约束                                     | 描述                  |
+|------------|--------------|-----------------------------------------|----------------------|
+| **sound_id** | `INT NOT NULL` | 外键，关联声音ID   | 关联的声音 ID        |
+| **tag_id**  | `INT NOT NULL` | 外键，关联标签表                        | 关联的标签 ID        |
+| **PRIMARY KEY** | `(sound_id, tag_id)` | 组合主键，防止重复记录 | 唯一性约束 |
+
+---
+
+### 创建指令
+
+```sql
+CREATE TABLE item_tags (
+    sound_id INT NOT NULL COMMENT '关联的声音 ID',
+    tag_id INT NOT NULL COMMENT '关联的标签 ID',
+    PRIMARY KEY (sound_id, tag_id),
+    FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='标签关联表';
 ```
 
 ## 点赞记录表 (likes)
