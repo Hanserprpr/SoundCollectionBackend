@@ -18,4 +18,10 @@ public class UserProfileDTO {
         this.fansCount = fansCount;
         this.isFollow = isFollow;
     }
+
+    public UserProfileDTO(User user, int followCount, int fansCount) {
+        this.user = user;
+        this.followCount = followCount;
+        this.fansCount = fansCount;
+    }
 }

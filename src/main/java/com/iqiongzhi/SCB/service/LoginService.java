@@ -3,6 +3,7 @@ package com.iqiongzhi.SCB.service;
 import com.iqiongzhi.SCB.data.dto.LoginDTO;
 import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.data.vo.Result;
+import com.iqiongzhi.SCB.mapper.PrivacyMapper;
 import com.iqiongzhi.SCB.mapper.UserMapper;
 import com.iqiongzhi.SCB.utils.*;
 import com.iqiongzhi.SCB.utils.BcryptUtils;
@@ -35,6 +36,9 @@ public class LoginService {
 
     @Autowired
     private JWTUtil jwtUtil;
+
+    @Autowired
+    private PrivacyMapper privacyMapper;
 
     /**
      * 山东大学统一认证登录
@@ -74,6 +78,8 @@ public class LoginService {
         if(!isExisted(SDUId)){
             String passwd = BcryptUtils.encrypt(password);
             userMapper.addUser(username, passwd,SDUId);
+            int id = userMapper.getUserId(SDUId, "SDUId");
+            privacyMapper.insertPrivacy(id);
         }
 
         String id = Integer.toString(userMapper.getUserId(SDUId, "SDUId"));
@@ -126,6 +132,8 @@ public class LoginService {
         }
         if(!isWxExisted(loginDTO.openid)){
             userMapper.addWXUser(loginDTO.openid);
+            int id = userMapper.getUserId(loginDTO.openid, "wechat");
+            privacyMapper.insertPrivacy(id);
         }
         String user_id = loginDTO.openid;
         String id = Integer.toString(userMapper.getUserId(user_id, "wechat"));
@@ -201,7 +209,7 @@ public class LoginService {
 
 
     /**
-     * 验证邮箱注册
+     * 验证邮箱登录
      * @param ticket 获取验证码时返回的 ticket
      * @param code 验证码
      * @return 验证结果

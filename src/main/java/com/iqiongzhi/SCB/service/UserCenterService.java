@@ -1,6 +1,8 @@
 package com.iqiongzhi.SCB.service;
 
+import com.iqiongzhi.SCB.data.dto.UserProfileDTO;
 import com.iqiongzhi.SCB.data.vo.Result;
+import com.iqiongzhi.SCB.mapper.FollowMapper;
 import com.iqiongzhi.SCB.mapper.SoundMapper;
 import com.iqiongzhi.SCB.mapper.UserMapper;
 import com.iqiongzhi.SCB.data.po.User;
@@ -20,6 +22,8 @@ public class UserCenterService {
     UserMapper userMapper;
     @Autowired
     private SoundMapper soundMapper;
+    @Autowired
+    private FollowMapper followMapper;
 
     /**
      * 获取用户信息
@@ -27,7 +31,11 @@ public class UserCenterService {
      * @return 用户信息
      */
     public ResponseEntity<Result> getMe(String id) {
-        return ResponseUtil.build(Result.success(userMapper.findUserById(id), "获取成功"));
+        User user = userMapper.findUserById(id);
+        int follow = followMapper.getFollowCount(id);
+        int fans = followMapper.getFansCount(id);
+        UserProfileDTO userProfileDTO = new UserProfileDTO(user, follow, fans);
+        return ResponseUtil.build(Result.success(userProfileDTO, "获取成功"));
     }
 
     /**
