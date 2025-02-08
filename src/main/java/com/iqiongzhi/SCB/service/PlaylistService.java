@@ -67,9 +67,8 @@ public class PlaylistService {
 
     public ResponseEntity<Result> getPlaylistById(String playlistId) {
         List<PlaylistSounds> sounds = playlistSoundsMapper.getPlaylistById(playlistId);
-        List<Long> soundIds = sounds.stream()
+        List<Integer> soundIds = sounds.stream()
                 .map(PlaylistSounds::getSoundId)
-                .map(Integer::longValue)
                 .toList();
         List<Sound> soundDetails = soundMapper.getSoundsByIds(soundIds);
         Map<Integer, Sound> soundMap = soundDetails.stream()

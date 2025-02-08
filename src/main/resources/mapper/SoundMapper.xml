@@ -5,7 +5,7 @@
 
 <mapper namespace="com.iqiongzhi.SCB.mapper.SoundMapper">
     <select id="getSoundsByIds" resultType="com.iqiongzhi.SCB.data.po.Sound">
-        SELECT * FROM sound WHERE id IN
+        SELECT id, user_id, title, description, category, cover_url, created_at, updated_at, duration, views FROM sound WHERE id IN
         <foreach collection="soundIds" item="soundId" open="(" separator="," close=")">
             #{soundId}
         </foreach>

@@ -30,10 +30,12 @@ public class SoundSyncService {
     public void syncSoundsFromMySQL() {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT s.id, s.title, s.category, s.cover_url, s.views, s.created_at, s.description, s.location, " +
+                     "SELECT s.id, s.user_id, s.title, s.category, s.cover_url, s.views, s.created_at, s.description, s.location, " +
                              "(SELECT COUNT(*) FROM likes l WHERE l.sound_id = s.id) AS likes, " +
-                             "(SELECT COUNT(*) FROM comments c WHERE c.sound_id = s.id) AS comments " +
-                             "FROM sound s")) {
+                             "(SELECT COUNT(*) FROM comments c WHERE c.sound_id = s.id) AS comments, " +
+                             "u.username " +
+                             "FROM sound s " +
+                             "JOIN user u ON s.user_id = u.id")) {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -48,8 +50,9 @@ public class SoundSyncService {
 
                 int likes = rs.getInt("likes");
                 int comments = rs.getInt("comments");
+                String username = rs.getString("username");
 
-                double hotScore = views * 0.5 + likes * 0.3 + comments * 0.2;  // 计算热度
+                double hotScore = views * 0.5 + likes * 0.2 + comments * 0.3;  // 计算热度
 
                 Sound sound = new Sound();
                 sound.setId(id);
@@ -63,13 +66,15 @@ public class SoundSyncService {
                 sound.setComments(comments);
                 sound.setHotScore(hotScore);
                 sound.setCreatedAt(createdAt);
+                sound.setUsername(username);
 
                 soundRepository.save(sound);
             }
             System.out.println("Elasticsearch 数据同步完成！");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("同步数据失败", e);
         }
     }
+
 
 }

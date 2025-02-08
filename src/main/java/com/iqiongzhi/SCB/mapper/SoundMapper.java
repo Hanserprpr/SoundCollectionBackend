@@ -15,14 +15,17 @@ public interface SoundMapper {
     Sound getSound(String soundId);
     @Select("select id, user_id, title, description, category, cover_url, location from sound where category=#{category}  LIMIT #{offset}, #{limit}")
     List<Sound> getSoundList(@Param("category") String category, @Param("offset") int offset, @Param("limit") int limit);
+    @Select("select id, user_id, title, description, category, cover_url, location from sound")
+    List<Sound> getAllSounds();
 
     @Insert("insert into sound (user_id, title, description, category, file_url, cover_url, location, duration) values (#{userId}, #{title}, #{description}, #{category}, #{fileUrl}, #{coverUrl}, #{location}, #{duration})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertSound(Sound sound);
 
     @Delete("delete from sound where id=#{id}")
     void delSound(String soundId);
 
-    List<Sound> getSoundsByIds(@Param("soundIds") List<Long> soundIds);
+    List<Sound> getSoundsByIds(@Param("soundIds") List<Integer> soundIds);
 
     @Update("update sound set title=#{title}, description=#{description}, category=#{category}, file_url = #{fileUrl}, cover_url=#{coverUrl}, location=#{location} where id=#{id}")
     void updateSound(Sound sound);

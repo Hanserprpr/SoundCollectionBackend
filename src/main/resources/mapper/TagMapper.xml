@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iqiongzhi.SCB.mapper.TagMapper">
+
+    <select id="getTagId" parameterType="java.lang.String" resultType="int">
+        SELECT id FROM tags WHERE name = #{tag} LIMIT 1
+    </select>
+
+    <insert id="batchInsertTags">
+        INSERT IGNORE INTO tags (name) VALUES
+        <foreach collection="tags" item="tag" separator=",">
+            (#{tag})
+        </foreach>
+    </insert>
+
+    <insert id="batchInsertSoundTags">
+        INSERT IGNORE INTO sound_tags (sound_id, tag_id) VALUES
+        <foreach collection="tagIds" item="tagId" separator=",">
+            (#{soundId}, #{tagId})
+        </foreach>
+    </insert>
+
+    <select id="getTagsBySoundIds" resultType="map">
+        SELECT st.sound_id, t.name
+        FROM tags t
+        INNER JOIN sound_tags st ON t.id = st.tag_id
+        WHERE st.sound_id IN
+        <foreach collection="soundIds" item="soundId" open="(" separator="," close=")">
+            #{soundId}
+        </foreach>
+    </select>
+
+
+</mapper>

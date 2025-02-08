@@ -7,10 +7,7 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -19,7 +16,7 @@ public class AppRedisCacheManager implements IGlobalCache {
 
     private RedisTemplate<String, Object> redisTemplate;
 
-    private final HashOperations<String, String, Object> hashOperations;
+    private final HashOperations<String, String, String > hashOperations;
 
     @Override
     public boolean expire(String key, long time) {
@@ -101,6 +98,30 @@ public class AppRedisCacheManager implements IGlobalCache {
     public Map<Object, Object> hmget(String key) {
         return redisTemplate.opsForHash().entries(key);
     }
+
+    @Override
+    public Map<String, Integer> hmgetAsIntegerMap(String key) {
+        // 从 Redis 中获取原始数据
+        Map<Object, Object> rawData = redisTemplate.opsForHash().entries(key);
+        Map<String, Integer> result = new HashMap<>();
+
+        for (Map.Entry<Object, Object> entry : rawData.entrySet()) {
+            String k = entry.getKey().toString(); // 强制转换键为 String
+            Integer v = null;
+
+            try {
+                // 将值转换为 Integer
+                v = Integer.parseInt(entry.getValue().toString());
+            } catch (NumberFormatException e) {
+                System.err.println("无法将值 " + entry.getValue() + " 转换为 Integer，跳过该条记录。");
+            }
+
+            result.put(k, v);
+        }
+
+        return result;
+    }
+
 
     @Override
     public boolean hmset(String key, Map<String, Object> map) {
@@ -282,4 +303,53 @@ public class AppRedisCacheManager implements IGlobalCache {
     public void rangeRemove(String key, Long stard, Long end) {
         redisTemplate.opsForList().trim(key, stard, end);
     }
+
+    @Override
+    public boolean zAdd(String key, Object value, double score) {
+        return Boolean.TRUE.equals(redisTemplate.opsForZSet().add(key, value, score));
+    }
+
+    @Override
+    public Set<Object> zRange(String key, long start, long end) {
+        return redisTemplate.opsForZSet().range(key, start, end);
+    }
+
+    @Override
+    public Set<Object> zRangeByScore(String key, double min, double max) {
+        return redisTemplate.opsForZSet().rangeByScore(key, min, max);
+    }
+
+    @Override
+    public boolean zRemove(String key, Object value) {
+        Long removedCount = redisTemplate.opsForZSet().remove(key, value);
+        return removedCount != null && removedCount > 0;
+    }
+
+
+    @Override
+    public Double zScore(String key, Object value) {
+        return redisTemplate.opsForZSet().score(key, value);
+    }
+
+    @Override
+    public long zSize(String key) {
+        Long size = redisTemplate.opsForZSet().size(key);
+        return size != null ? size : 0;
+    }
+
+    @Override
+    public Long zRank(String key, Object value) {
+        return redisTemplate.opsForZSet().rank(key, value);
+    }
+
+    @Override
+    public Set<Object> zReverseRange(String key, long start, long end) {
+        return redisTemplate.opsForZSet().reverseRange(key, start, end);
+    }
+
+    @Override
+    public long zRemoveRangeByRank(String key, long maxRank) {
+        return redisTemplate.opsForZSet().removeRange(key, maxRank, -1);
+    }
+
 }

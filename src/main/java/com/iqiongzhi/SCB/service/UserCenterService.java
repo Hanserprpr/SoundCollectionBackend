@@ -1,17 +1,22 @@
 package com.iqiongzhi.SCB.service;
 
 import com.iqiongzhi.SCB.data.dto.UserProfileDTO;
+import com.iqiongzhi.SCB.data.po.Sound;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.mapper.FollowMapper;
 import com.iqiongzhi.SCB.mapper.SoundMapper;
+import com.iqiongzhi.SCB.mapper.TagMapper;
 import com.iqiongzhi.SCB.mapper.UserMapper;
 import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.utils.ResponseUtil;
 import com.iqiongzhi.SCB.cache.IGlobalCache;
 
+import com.iqiongzhi.SCB.utils.SoundUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -24,6 +29,10 @@ public class UserCenterService {
     private SoundMapper soundMapper;
     @Autowired
     private FollowMapper followMapper;
+    @Autowired
+    private SoundUtils soundUtils;
+    @Autowired
+    private TagMapper tagMapper;
 
     /**
      * 获取用户信息
@@ -74,6 +83,7 @@ public class UserCenterService {
      * @return 用户上传的声音
      */
     public ResponseEntity<Result> getMyVoices(String userId) {
-        return ResponseUtil.build(Result.success(soundMapper.getMySounds(userId), "获取成功"));
+        List<Sound> sounds = soundMapper.getMySounds(userId);
+        return ResponseUtil.build(Result.success(soundUtils.addTags(sounds), "获取成功"));
     }
 }

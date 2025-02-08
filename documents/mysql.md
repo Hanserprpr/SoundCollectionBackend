@@ -214,7 +214,7 @@ CREATE TABLE likes (
 | **sound_id**    | `INT NOT NULL`               | 外键，关联声音表                         | 被评论的声音ID         |
 | **user_id**     | `INT NOT NULL`               | 外键，关联用户表                         | 发表评论的用户ID       |
 | **content**     | `TEXT NOT NULL`              | 非空                                    | 评论内容               |
-| **parent_id**   | `INT DEFAULT NULL`           | 可以为空                                | 父评论ID（用于回复）   |
+| **likes** | `INT DEFAULT` | 无特殊约束 | 点赞数 |
 | **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 评论时间               |
 | **updated_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP` | 自动更新为当前时间                       | 最后一次更新时间       |
 
@@ -228,13 +228,42 @@ CREATE TABLE comments (
     sound_id INT NOT NULL COMMENT '被评论的声音ID',
     user_id INT NOT NULL COMMENT '发表评论的用户ID',
     content TEXT NOT NULL COMMENT '评论内容',
-    parent_id INT DEFAULT NULL COMMENT '父评论ID（用于回复）',
+    likes INT DEFAULT 0 COMMENT '点赞数',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '评论时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后一次更新时间',
     FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评论表';
+```
+
+## 评论点赞表(comments_like)
+
+评论点赞表用于存储用户对评论的点赞信息，防止重复点赞。
+
+---
+
+### 表结构
+
+| 字段名         | 数据类型                           | 约束                                     | 描述                         |
+|---------------|----------------------------------|-----------------------------------------|------------------------------|
+| **id**        | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                         | 点赞记录的唯一ID              |
+| **comment_id** | `INT NOT NULL`                   | 外键，关联 `comments` 表                | 被点赞的评论ID                |
+| **user_id**    | `INT NOT NULL`                   | 外键，关联 `user` 表                   | 点赞用户的ID                  |
+| **created_at** | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                  | 点赞时间                      |
+| **约束**       | `UNIQUE (comment_id, user_id)`   | 确保 `user_id` 只能对 `comment_id` 点一次赞 | 防止重复点赞                  |
+
+### 创建指令
+
+```sql
+CREATE TABLE comments_like (
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '点赞ID',
+    comment_id INT NOT NULL COMMENT '被点赞的评论ID',
+    user_id INT NOT NULL COMMENT '点赞用户ID',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '点赞时间',
+    FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    UNIQUE (comment_id, user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='点赞记录表';
 ```
 
 ## 收藏夹表 (collections)

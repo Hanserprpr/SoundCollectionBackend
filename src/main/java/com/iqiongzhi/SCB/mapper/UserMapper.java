@@ -5,6 +5,7 @@ import com.iqiongzhi.SCB.data.po.Sound;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface UserMapper {
@@ -37,4 +38,13 @@ public interface UserMapper {
     @UpdateProvider(type = UserSQLProvider.class, method = "updateById")
     void updateById(@Param("id") Integer id, @Param("user") User user);
 
+    @Select("<script>" +
+            "SELECT s.id as sound_id, u.username FROM sound s " +
+            "JOIN `user` u ON s.user_id = u.id " +
+            "WHERE s.id IN " +
+            "<foreach item='id' collection='soundIds' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<Map<String, Object>> getUsernamesBySoundIds(@Param("soundIds") List<Integer> soundIds);
 }

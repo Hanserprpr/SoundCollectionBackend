@@ -1,7 +1,5 @@
 package com.iqiongzhi.SCB.controller;
 
-import com.iqiongzhi.SCB.data.po.Sound;
-import com.iqiongzhi.SCB.data.repository.SoundRepository;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.service.RecommendService;
 import com.iqiongzhi.SCB.service.SoundService;
@@ -9,15 +7,9 @@ import com.iqiongzhi.SCB.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-
-@Service
+@CrossOrigin
 @RestController
 @RequestMapping("/recommend")
 public class RecommendController {
@@ -27,9 +19,9 @@ public class RecommendController {
 
     /**
      * 热门声音（分页）
-     * @param page
-     * @param size
-     * @return
+     * @param page 页码
+     * @param size 每页大小
+     * @return ResponseEntity<Result>
      */
     @GetMapping("/hot")
     public ResponseEntity<Result> getHotSounds(@RequestParam(defaultValue = "1") int page,
@@ -37,12 +29,35 @@ public class RecommendController {
         return recommendService.getHotSound(page, size);
     }
 
-    // 最新声音（分页）
+    /**
+     * 最新声音（分页）
+     * @param page 页码
+     * @param size 每页大小
+     * @return ResponseEntity<Result>
+     */
     @GetMapping("/latest")
     public ResponseEntity<Result> getLatestSounds(@RequestParam(defaultValue = "1") int page,
                                                   @RequestParam(defaultValue = "10") int size) {
         return recommendService.getLatestSound(page, size);
     }
 
+    /**
+     * 获取每周热门声音
+     * @return ResponseEntity<Result>
+     */
+    @GetMapping("/weeklyHot")
+    public ResponseEntity<Result> getWeeklyHotSounds() {
+        return ResponseUtil.build(Result.success(recommendService.getWeeklyHotSound(), "获取成功"));
+    }
+
+    /**
+     * 手动更新每周热门声音
+     * @return ResponseEntity<Result>
+     */
+    @GetMapping("/updateWeeklyHot")
+    public ResponseEntity<Result> updateWeeklyHotSounds() {
+        recommendService.updateHotnessManual();
+        return ResponseUtil.build(Result.ok());
+    }
 
 }
