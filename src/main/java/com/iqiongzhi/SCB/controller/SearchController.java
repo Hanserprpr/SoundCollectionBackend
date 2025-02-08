@@ -14,7 +14,7 @@ public class SearchController {
     @Autowired
     private SearchService searchService;
 
-    @GetMapping("/{keyword}")
+    @GetMapping("/all")
     public ResponseEntity<Result> searchSounds(@RequestParam String keyword,
                                                @RequestParam(defaultValue = "1") int page,
                                                @RequestParam(defaultValue = "10") int size) {

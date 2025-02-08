@@ -34,3 +34,4 @@ build/
 /src/main/resources/application.yml
 /src/main/resources/email-config.properties
 logs/app.log
+/logs/

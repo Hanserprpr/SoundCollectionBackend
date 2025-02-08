@@ -39,7 +39,7 @@ public class Sound {
     @Field(type = FieldType.Keyword)
     private String category;
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private List<String> tags;
 
     @NotBlank(message = "文件地址不能为空")

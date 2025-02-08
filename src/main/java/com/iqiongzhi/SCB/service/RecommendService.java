@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -38,11 +42,13 @@ public class RecommendService {
     }
 
     public ResponseEntity<Result> getLatestSound(int page, int size) {
-        List<Sound> sounds = soundRepository.findAllSounds()
-                .subList((page - 1) * size, (int) Math.min((long) page * size, soundRepository.count()));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        return ResponseUtil.build(Result.success(sounds, "获取成功"));
+        Page<Sound> soundPage = soundRepository.findAll(pageable);
+
+        return ResponseUtil.build(Result.success(soundPage.getContent(), "获取成功"));
     }
+
 
     private List<Sound> getWeeklyHotSoundUtil() {
         Map<String, Integer> viewMap = redisService.hmgetAsIntegerMap("view");

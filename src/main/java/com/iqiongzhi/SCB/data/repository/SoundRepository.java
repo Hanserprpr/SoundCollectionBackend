@@ -1,9 +1,15 @@
 package com.iqiongzhi.SCB.data.repository;
 
 import com.iqiongzhi.SCB.data.po.Sound;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 import java.util.List;
 
 @Repository
@@ -16,12 +22,10 @@ public interface SoundRepository extends ElasticsearchRepository<Sound, Integer>
     List<Sound> findByOrderByCreatedAtDesc();
 
     // 关键词搜索 + 热门排序
-    List<Sound> findByTitleContainingOrDescriptionContainingOrLocationContainingOrderByHotScoreDesc(String title, String description, String location);
+    @Query("{\"multi_match\": {\"query\": \"?0\", \"fields\": [\"title\", \"description\", \"location\", \"category\", \"tags\"]}}")
+    Page<Sound> searchByKeyword(String keyword, Pageable pageable);
 
-    @Query("{\"match_all\": {}}")
-    List<Sound> findAllSounds();
-
-
+    @NotNull Page<Sound> findAll(@NotNull Pageable pageable);
 
 
 }

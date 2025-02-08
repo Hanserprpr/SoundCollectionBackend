@@ -2,6 +2,7 @@ package com.iqiongzhi.SCB.service;
 
 import com.iqiongzhi.SCB.data.po.Sound;
 import com.iqiongzhi.SCB.data.repository.SoundRepository;
+import com.iqiongzhi.SCB.utils.SoundUtils;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,7 +11,9 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class SoundSyncService {
@@ -20,6 +23,9 @@ public class SoundSyncService {
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private SoundUtils soundUtils;
 
     @PostConstruct
     public void syncOnStartup() {
@@ -67,6 +73,11 @@ public class SoundSyncService {
                 sound.setHotScore(hotScore);
                 sound.setCreatedAt(createdAt);
                 sound.setUsername(username);
+
+                List<Sound> soundList = Collections.singletonList(sound);
+                soundList = soundUtils.addTags(soundList);
+                sound = soundList.get(0);
+
 
                 soundRepository.save(sound);
             }
