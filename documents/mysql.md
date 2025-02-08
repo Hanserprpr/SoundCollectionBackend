@@ -142,7 +142,7 @@ CREATE TABLE tags (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='标签表';
 ```
 
-## 标签关联表 (item_tags)
+## 标签关联表 (sound_tags)
 
 标签关联表用于存储标签与声音的关联关系，每条记录表示一个对象与一个标签的绑定关系。
 
@@ -161,7 +161,7 @@ CREATE TABLE tags (
 ### 创建指令
 
 ```sql
-CREATE TABLE item_tags (
+CREATE TABLE sound_tags (
     sound_id INT NOT NULL COMMENT '关联的声音 ID',
     tag_id INT NOT NULL COMMENT '关联的标签 ID',
     PRIMARY KEY (sound_id, tag_id),
