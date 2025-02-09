@@ -31,10 +31,10 @@ public interface PrivacyMapper {
     @Select("select show_follows from privacy_settings where user_id=#{userId}")
     Integer getFollowsPriById(String userId);
 
-    @Select("select show_fans from privacy_settings where id=#{id}")
+    @Select("select show_fans from privacy_settings where user_id=#{userId}")
     Integer getFansPriById(String userId);
 
-    @Select("select show_collections from privacy_settings where id=#{id}")
+    @Select("select show_collections from privacy_settings where user_id=#{userId}")
     Integer getCollectionsPriById(String userId);
 
 
