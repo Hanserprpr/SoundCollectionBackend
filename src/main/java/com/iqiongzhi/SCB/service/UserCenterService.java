@@ -3,10 +3,7 @@ package com.iqiongzhi.SCB.service;
 import com.iqiongzhi.SCB.data.dto.UserProfileDTO;
 import com.iqiongzhi.SCB.data.po.Sound;
 import com.iqiongzhi.SCB.data.vo.Result;
-import com.iqiongzhi.SCB.mapper.FollowMapper;
-import com.iqiongzhi.SCB.mapper.SoundMapper;
-import com.iqiongzhi.SCB.mapper.TagMapper;
-import com.iqiongzhi.SCB.mapper.UserMapper;
+import com.iqiongzhi.SCB.mapper.*;
 import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.utils.ResponseUtil;
 import com.iqiongzhi.SCB.cache.IGlobalCache;
@@ -33,6 +30,8 @@ public class UserCenterService {
     private SoundUtils soundUtils;
     @Autowired
     private TagMapper tagMapper;
+    @Autowired
+    private CollectionMapper collectionMapper;
 
     /**
      * 获取用户信息
@@ -85,5 +84,47 @@ public class UserCenterService {
     public ResponseEntity<Result> getMyVoices(String userId) {
         List<Sound> sounds = soundMapper.getMySounds(userId);
         return ResponseUtil.build(Result.success(soundUtils.addTags(sounds), "获取成功"));
+    }
+
+    public ResponseEntity<Result> getMyCollections(String userId, int page, int size) {
+        try {
+            int offset = (page - 1) * size;
+            List<Integer> soundIds = collectionMapper.getCollectedSound(userId, offset, size);
+            if (soundIds.isEmpty()) {
+                return ResponseUtil.build(Result.success(null, "您还没有收藏QAQ"));
+            }
+            List<Sound> result = collectionMapper.getCollectedSoundList(soundIds);
+            return ResponseUtil.build(Result.success(result, "获取收藏成功"));
+        } catch (Exception e) {
+            return ResponseUtil.build(Result.error(400, "获取收藏失败" + e));
+        }
+    }
+
+    public ResponseEntity<Result> getMyFans(String userId, int page, int size) {
+        try {
+            int offset = (page - 1) * size;
+            List<Integer> fansIds = followMapper.getFans(userId, offset, size);
+            if (fansIds.isEmpty()) {
+                return ResponseUtil.build(Result.success(null, "您还没有粉丝QAQ"));
+            }
+            List<User> result = followMapper.getFollowsList(fansIds);
+            return ResponseUtil.build(Result.success(result, "获取粉丝成功"));
+        } catch (Exception e) {
+            return ResponseUtil.build(Result.error(400, "获取粉丝失败" + e));
+        }
+    }
+
+    public ResponseEntity<Result> getMyFollows(String userId, int page, int size) {
+        try {
+            int offset = (page - 1) * size;
+            List<Integer> followIds = followMapper.getFollows(userId, offset, size);
+            if (followIds.isEmpty()) {
+                return ResponseUtil.build(Result.success(null, "您还没有关注对象QAQ"));
+            }
+            List<User> result = followMapper.getFollowsList(followIds);
+            return ResponseUtil.build(Result.success(result, "获取关注对象成功"));
+        } catch (Exception e) {
+            return ResponseUtil.build(Result.error(400, "获取关注对象失败" + e));
+        }
     }
 }

@@ -18,8 +18,8 @@ public interface LikeMapper {
     int soundCnt(String soundId);
 
     @Insert("insert into likes (user_id, sound_id) values (#{user_id}, #{sound_id})")
-    void addLike(String user_id, String sound_id);
+    void addLike(@Param("user_id") String user_id, @Param("sound_id")String sound_id);
 
     @Delete("delete from likes where user_id=#{userId} and sound_id=#{soundId}")
-    int unlike(String userId, String soundId);
+    int unlike(@Param("userId") String user_id, @Param("soundId")String sound_id);
 }

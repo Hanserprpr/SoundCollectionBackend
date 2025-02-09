@@ -77,6 +77,38 @@ public class UserCenterController {
     }
 
     /**
+     * 获取用户的收藏
+     * @return 用户收藏列表
+     */
+    @Auth
+    @GetMapping("/myCollections/{page}")
+    public ResponseEntity<Result> getMyCollections(@PathVariable int page) {
+        String userId = (String) request.getAttribute("userId");
+        return userCenterService.getMyCollections(userId,page,15);//默认size15
+    }
+
+    /**
+     * 获取用户的粉丝
+     * @return 用户粉丝列表
+     */
+    @Auth
+    @GetMapping("/myFans/{page}")
+    public ResponseEntity<Result> getMyFans(@PathVariable int page) {
+        String userId = (String) request.getAttribute("userId");
+        return userCenterService.getMyFans(userId,page,15);//默认size15
+    }
+
+    /**
+     * 获取用户的关注
+     * @return 用户关注对象列表
+     */
+    @Auth
+    @GetMapping("/myFollows/{page}")
+    public ResponseEntity<Result> getMyFollows(@PathVariable int page) {
+        String userId = (String) request.getAttribute("userId");
+        return userCenterService.getMyFollows(userId,page,15);//默认size15
+    }
+    /**
      * 隐藏收藏
      * @return 隐藏收藏结果
      */

@@ -1,20 +1,32 @@
 package com.iqiongzhi.SCB.mapper;
 
+
+import com.iqiongzhi.SCB.data.po.User;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface FollowMapper {
     @Insert("insert into follows (follower, following, created_at) values (#{follower}, #{following})")
-    void addFollow(String follower, String following);
+    void addFollow(@Param("follower") String follower, @Param("following") String following);
 
     @Delete("delete from follows where follower=#{follower} and following=#{following}")
-    int unfollow(String follower, String following);
+    int unfollow(@Param("follower") String follower, @Param("following") String following);
 
     @Select("select count(*) from follows where follower=#{id}")
     int getFollowCount(String id);
 
     @Select("select count(*) from follows where following=#{id}")
     int getFansCount(String id);
+
+    @Select("select follower from follows where following=#{userId} LIMIT #{offset}, #{limit}")
+    List<Integer> getFans(String userId, @Param("offset") int offset, @Param("limit") int limit);
+
+    @Select("select follower from follows where follower=#{userId} LIMIT #{offset}, #{limit}")
+    List<Integer> getFollows(String userId, @Param("offset") int offset, @Param("limit") int limit);
+
+    List<User> getFollowsList(@Param("list") List<Integer> follows);
 
 
     /**
