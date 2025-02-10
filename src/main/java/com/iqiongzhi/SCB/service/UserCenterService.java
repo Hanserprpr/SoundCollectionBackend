@@ -91,7 +91,7 @@ public class UserCenterService {
             int offset = (page - 1) * size;
             List<Integer> soundIds = collectionMapper.getCollectedSound(userId, offset, size);
             if (soundIds.isEmpty()) {
-                return ResponseUtil.build(Result.success(null, "您还没有收藏QAQ"));
+                return ResponseUtil.build(Result.error(404, "您还没有收藏QAQ"));
             }
             List<Sound> result = collectionMapper.getCollectedSoundList(soundIds);
             return ResponseUtil.build(Result.success(result, "获取收藏成功"));
@@ -105,7 +105,7 @@ public class UserCenterService {
             int offset = (page - 1) * size;
             List<Integer> fansIds = followMapper.getFans(userId, offset, size);
             if (fansIds.isEmpty()) {
-                return ResponseUtil.build(Result.success(null, "您还没有粉丝QAQ"));
+                return ResponseUtil.build(Result.error(404, "您还没有粉丝QAQ"));
             }
             List<User> result = followMapper.getFollowsList(fansIds);
             return ResponseUtil.build(Result.success(result, "获取粉丝成功"));
@@ -119,7 +119,7 @@ public class UserCenterService {
             int offset = (page - 1) * size;
             List<Integer> followIds = followMapper.getFollows(userId, offset, size);
             if (followIds.isEmpty()) {
-                return ResponseUtil.build(Result.success(null, "您还没有关注对象QAQ"));
+                return ResponseUtil.build(Result.error(404, "您还没有关注对象QAQ"));
             }
             List<User> result = followMapper.getFollowsList(followIds);
             return ResponseUtil.build(Result.success(result, "获取关注对象成功"));

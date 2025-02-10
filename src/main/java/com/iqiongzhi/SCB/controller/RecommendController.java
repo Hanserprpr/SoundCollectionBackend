@@ -47,7 +47,7 @@ public class RecommendController {
      */
     @GetMapping("/weeklyHot")
     public ResponseEntity<Result> getWeeklyHotSounds() {
-        return ResponseUtil.build(Result.success(recommendService.getWeeklyHotSound(), "获取成功"));
+        return recommendService.getWeeklyHotSound();
     }
 
     /**

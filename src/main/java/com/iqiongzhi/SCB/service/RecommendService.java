@@ -46,7 +46,11 @@ public class RecommendService {
 
         Page<Sound> soundPage = soundRepository.findAll(pageable);
 
-        return ResponseUtil.build(Result.success(soundPage.getContent(), "获取成功"));
+        List<Sound> sounds = soundPage.getContent();
+        if (sounds.isEmpty()) {
+            return ResponseUtil.build(Result.error(404, "暂无数据"));
+        }
+        return ResponseUtil.build(Result.success(sounds, "获取成功"));
     }
 
 
@@ -122,7 +126,9 @@ public class RecommendService {
         List<Sound> sounds = soundMap.values().stream()
                 .map(o -> (Sound) o)
                 .collect(Collectors.toList());
-
+        if (sounds.isEmpty()) {
+            return ResponseUtil.build(Result.error(404, "暂无数据"));
+        }
         return ResponseUtil.build(Result.success(sounds, "获取成功"));
     }
 

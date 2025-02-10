@@ -1,18 +1,18 @@
 package com.iqiongzhi.SCB.service;
 
-
-import com.iqiongzhi.SCB.mapper.FollowMapper;
-import com.iqiongzhi.SCB.utils.ResponseUtil;
-import com.iqiongzhi.SCB.data.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.iqiongzhi.SCB.data.vo.Result;
+import com.iqiongzhi.SCB.mapper.FollowMapper;
+import com.iqiongzhi.SCB.utils.ResponseUtil;
 
 @Service
 public class FollowService {
+
     @Autowired
     private FollowMapper followMapper;
 
@@ -28,8 +28,6 @@ public class FollowService {
             return ResponseUtil.build(Result.error(400, "关注失败qwq"));
         }
     }
-
-
 
     public ResponseEntity<Result> disfollow(String follower, String following) {
         try {

@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -34,7 +33,10 @@ public class SearchService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "hotScore"));
         Page<Sound> soundPage = soundRepository.searchByKeyword(keyword, pageable);
-
-        return ResponseUtil.build(Result.success(soundPage.getContent(), "获取成功"));
+        List<Sound> data = soundPage.getContent();
+        if (data.isEmpty()) {
+            return ResponseUtil.build(Result.error(404, "暂无数据"));
+        }
+        return ResponseUtil.build(Result.success(data, "获取成功"));
     }
 }

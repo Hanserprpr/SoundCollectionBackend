@@ -1,6 +1,7 @@
 package com.iqiongzhi.SCB.service;
 
 import com.iqiongzhi.SCB.cache.IGlobalCache;
+import com.iqiongzhi.SCB.data.dto.CommentDTO;
 import com.iqiongzhi.SCB.data.po.Comment;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.mapper.CommentMapper;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class CommentService {
@@ -85,7 +88,11 @@ public class CommentService {
      */
     public ResponseEntity<Result> latestComment(String soundId, int page) {
         int offset = (page - 1) * 15;
-        return ResponseUtil.build(Result.success(commentMapper.getLatestComments(soundId, offset), "获取成功"));
+        List<CommentDTO> data  = commentMapper.getLatestComments(soundId, offset);
+        if (data.isEmpty()) {
+            return ResponseUtil.build(Result.error(404, "没有评论"));
+        }
+        return ResponseUtil.build(Result.success(data, "获取成功"));
     }
 
     /**
@@ -96,6 +103,10 @@ public class CommentService {
      */
     public ResponseEntity<Result> hotComment(String soundId, int page) {
         int offset = (page - 1) * 15;
-        return ResponseUtil.build(Result.success(commentMapper.getHotComments(soundId, offset), "获取成功"));
+        List<CommentDTO> data = commentMapper.getHotComments(soundId, offset);
+        if (data.isEmpty()) {
+            return ResponseUtil.build(Result.error(404, "没有评论"));
+        }
+        return ResponseUtil.build(Result.success(data, "获取成功"));
     }
 }

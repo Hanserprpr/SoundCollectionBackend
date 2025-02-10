@@ -63,7 +63,7 @@ public class CommentController {
      * @return 取消点赞结果
      */
     @Auth
-    @PostMapping("/unlike/{commentId}")
+    @DeleteMapping("/unlike/{commentId}")
     public ResponseEntity<Result> unlikeComment(@PathVariable String commentId) {
         String userId = (String) request.getAttribute("userId");
         return commentService.unlikeComment(userId, commentId);
@@ -76,7 +76,6 @@ public class CommentController {
      * @param page    页码
      * @return ResponseEntity<Result>
      */
-    @Auth
     @GetMapping("/latest")
     public ResponseEntity<Result> latestComment(@RequestParam String soundId,
                                                 @RequestParam int page) {
@@ -90,7 +89,6 @@ public class CommentController {
      * @param page    页码
      * @return ResponseEntity<Result>
      */
-    @Auth
     @GetMapping("/hot")
     public ResponseEntity<Result> hotComment(@RequestParam String soundId,
                                              @RequestParam int page) {

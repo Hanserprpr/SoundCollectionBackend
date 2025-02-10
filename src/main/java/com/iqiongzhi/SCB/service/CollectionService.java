@@ -35,7 +35,7 @@ public class CollectionService {
             int offset = (page - 1) * size;
             List<Integer> soundIds = collectionMapper.getCollectedSound(userId, offset, size);
             if (soundIds.isEmpty()) {
-                return ResponseUtil.build(Result.success(null, "你还没有收藏QAQ"));
+                return ResponseUtil.build(Result.error(404, "你还没有收藏QAQ"));
             }
             List<Sound> result = collectionMapper.getCollectedSoundList(soundIds);
             return ResponseUtil.build(Result.success(result, "获取收藏成功"));

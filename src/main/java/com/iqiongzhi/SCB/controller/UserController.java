@@ -27,7 +27,6 @@ public class UserController {
      * 显示他人主页
      * @return 显示结果
      */
-    @Auth
     @GetMapping("/{id}")
     public ResponseEntity<Result> getUser(@PathVariable String id) {
         String userId = (String) request.getAttribute("userId");
@@ -38,7 +37,6 @@ public class UserController {
      * 获取用户的收藏
      * @return 用户收藏列表
      */
-    @Auth
     @GetMapping("/{id}/collection/{page}")
     public ResponseEntity<Result> getCollection(@PathVariable String id,@PathVariable int page) {
         return userservice.getCollections(id, page,15);//默认size15
@@ -48,7 +46,6 @@ public class UserController {
      * 获取用户的粉丝
      * @return 用户粉丝列表
      */
-    @Auth
     @GetMapping("/{id}/fans/{page}")
     public ResponseEntity<Result> getFans(@PathVariable String id,@PathVariable int page) {
         return userservice.getFans(id, page,15);//默认size15
@@ -58,7 +55,6 @@ public class UserController {
      * 获取用户的关注
      * @return 用户关注对象列表
      */
-    @Auth
     @GetMapping("/{id}/follows/{page}")
     public ResponseEntity<Result> getFollows(@PathVariable String id,@PathVariable int page) {
         return userservice.getFollows(id, page,15);//默认size15

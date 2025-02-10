@@ -109,7 +109,7 @@ public class UserCenterController {
         return userCenterService.getMyFollows(userId,page,15);//默认size15
     }
     /**
-     * 隐藏收藏
+     * 隐藏收藏夹
      * @return 隐藏收藏结果
      */
     @Auth
@@ -119,7 +119,7 @@ public class UserCenterController {
         return privacyService.hideCollections(userId);
     }
     /**
-     * 隐藏关注
+     * 隐藏关注列表
      * @return 隐藏关注结果
      */
     @Auth
@@ -130,7 +130,7 @@ public class UserCenterController {
     }
 
     /**
-     * 隐藏关注我的粉丝
+     * 隐藏粉丝列表
      * @return 隐藏粉丝结果
      */
     @Auth
@@ -140,7 +140,7 @@ public class UserCenterController {
         return privacyService.hideFans(userId);
     }
     /**
-     * 显示收藏
+     * 取消隐藏收藏夹
      * @return 显示收藏结果
      */
     @Auth
@@ -150,7 +150,7 @@ public class UserCenterController {
         return privacyService.displayCollections(userId);
     }
     /**
-     * 显示关注
+     * 取消隐藏关注列表
      * @return 显示关注结果
      */
     @Auth
@@ -161,7 +161,7 @@ public class UserCenterController {
     }
 
     /**
-     * 显示关注我的粉丝
+     * 取消隐藏粉丝列表
      * @return 显示粉丝结果
      */
     @Auth

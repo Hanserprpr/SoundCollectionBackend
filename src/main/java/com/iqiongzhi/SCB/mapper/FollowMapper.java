@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface FollowMapper {
-    @Insert("insert into follows (follower, following, created_at) values (#{follower}, #{following})")
+    @Insert("insert into follows (follower, following) values (#{follower}, #{following})")
     void addFollow(@Param("follower") String follower, @Param("following") String following);
 
     @Delete("delete from follows where follower=#{follower} and following=#{following}")
