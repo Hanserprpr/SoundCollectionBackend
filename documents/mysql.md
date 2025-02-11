@@ -417,7 +417,8 @@ CREATE TABLE search_logs (
     user_id INT NOT NULL COMMENT '搜索者的用户ID',
     keyword VARCHAR(100) NOT NULL COMMENT '搜索的关键词',
     searched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '搜索时间',
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    UNIQUE KEY (user_id, keyword)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='搜索记录表';
 ```
 
