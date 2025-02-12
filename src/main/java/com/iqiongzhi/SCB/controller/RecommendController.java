@@ -19,6 +19,7 @@ public class RecommendController {
 
     /**
      * 热门声音（分页）
+     *
      * @param page 页码
      * @param size 每页大小
      * @return ResponseEntity<Result>
@@ -31,6 +32,7 @@ public class RecommendController {
 
     /**
      * 最新声音（分页）
+     *
      * @param page 页码
      * @param size 每页大小
      * @return ResponseEntity<Result>
@@ -43,6 +45,7 @@ public class RecommendController {
 
     /**
      * 获取每周热门声音
+     *
      * @return ResponseEntity<Result>
      */
     @GetMapping("/weeklyHot")
@@ -52,12 +55,28 @@ public class RecommendController {
 
     /**
      * 手动更新每周热门声音
+     *
      * @return ResponseEntity<Result>
      */
     @GetMapping("/updateWeeklyHot")
     public ResponseEntity<Result> updateWeeklyHotSounds() {
         recommendService.updateHotnessManual();
         return ResponseUtil.build(Result.ok());
+    }
+
+    /**
+     * 获取风格推荐
+     *
+     * @param key  风格
+     * @param page 页码
+     * @param size 每页大小
+     * @return ResponseEntity<Result>
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Result> getRecommendSounds(@RequestParam String key,
+                                                     @RequestParam(defaultValue = "1") int page,
+                                                     @RequestParam(defaultValue = "10") int size) {
+        return recommendService.getTagSound(key, page, size);
     }
 
 }

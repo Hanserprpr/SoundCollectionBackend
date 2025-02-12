@@ -7,10 +7,12 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -36,56 +38,48 @@ public class SoundSyncService {
     public void syncSoundsFromMySQL() {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT s.id, s.user_id, s.title, s.category, s.cover_url, s.views, s.created_at, s.description, s.location, " +
-                             "(SELECT COUNT(*) FROM likes l WHERE l.sound_id = s.id) AS likes, " +
-                             "(SELECT COUNT(*) FROM comments c WHERE c.sound_id = s.id) AS comments, " +
-                             "u.username " +
+                     "SELECT s.id, s.user_id, s.title, s.category, s.cover_url, s.views, s.created_at, " +
+                             "s.description, s.location, u.username, " +
+                             "COALESCE(l.likes_count, 0) AS likes, " +
+                             "COALESCE(c.comments_count, 0) AS comments " +
                              "FROM sound s " +
-                             "JOIN user u ON s.user_id = u.id")) {
+                             "JOIN user u ON s.user_id = u.id " +
+                             "LEFT JOIN (SELECT sound_id, COUNT(*) AS likes_count FROM likes GROUP BY sound_id) l ON s.id = l.sound_id " +
+                             "LEFT JOIN (SELECT sound_id, COUNT(*) AS comments_count FROM comments GROUP BY sound_id) c ON s.id = c.sound_id " +
+                             "WHERE s.created_at >= NOW() - INTERVAL 10 MINUTE")) {  // 只同步最近10分钟的数据
 
             ResultSet rs = stmt.executeQuery();
+            List<Sound> soundList = new ArrayList<>();
+
             while (rs.next()) {
-                Integer id = rs.getInt("id");
-                String title = rs.getString("title");
-                String description = rs.getString("description");
-                String category = rs.getString("category");
-                String coverUrl = rs.getString("cover_url");
-                String location = rs.getString("location");
-                int views = rs.getInt("views");
-                Date createdAt = rs.getTimestamp("created_at");
-
-                int likes = rs.getInt("likes");
-                int comments = rs.getInt("comments");
-                String username = rs.getString("username");
-
-                double hotScore = views * 0.5 + likes * 0.2 + comments * 0.3;  // 计算热度
-
                 Sound sound = new Sound();
-                sound.setId(id);
-                sound.setTitle(title);
-                sound.setDescription(description);
-                sound.setCategory(category);
-                sound.setCoverUrl(coverUrl);
-                sound.setLocation(location);
-                sound.setViews(views);
-                sound.setLikes(likes);
-                sound.setComments(comments);
-                sound.setHotScore(hotScore);
-                sound.setCreatedAt(createdAt);
-                sound.setUsername(username);
-
-                List<Sound> soundList = Collections.singletonList(sound);
-                soundList = soundUtils.addTags(soundList);
-                sound = soundList.get(0);
-
-
-                soundRepository.save(sound);
+                sound.setId(rs.getInt("id"));
+                sound.setTitle(rs.getString("title"));
+                sound.setDescription(rs.getString("description"));
+                sound.setCategory(rs.getString("category"));
+                sound.setCoverUrl(rs.getString("cover_url"));
+                sound.setLocation(rs.getString("location"));
+                sound.setViews(rs.getInt("views"));
+                sound.setLikes(rs.getInt("likes"));
+                sound.setComments(rs.getInt("comments"));
+                sound.setHotScore(sound.getViews() * 0.5 + sound.getLikes() * 0.2 + sound.getComments() * 0.3);
+                sound.setCreatedAt(rs.getTimestamp("created_at"));
+                sound.setUsername(rs.getString("username"));
+                soundList.add(sound);
             }
-            System.out.println("Elasticsearch 数据同步完成！");
+
+            if (!soundList.isEmpty()) {
+                soundList = soundUtils.addTags(soundList);
+                soundRepository.saveAll(soundList);
+            }
+
+            System.out.println("Elasticsearch 增量数据同步完成！");
+
         } catch (Exception e) {
             throw new RuntimeException("同步数据失败", e);
         }
     }
+
 
 
 }

@@ -44,6 +44,7 @@ public class Result {
             case 403 -> HttpStatus.FORBIDDEN;    // 禁止访问
             case 404 -> HttpStatus.NOT_FOUND;    // 资源未找到
             case 409 -> HttpStatus.CONFLICT;     // 资源冲突
+            case 418 -> HttpStatus.I_AM_A_TEAPOT; // 服务器拒绝请求
             case 500, 554 -> HttpStatus.INTERNAL_SERVER_ERROR; // 服务器错误
             default -> HttpStatus.OK; // 默认返回 200
         };

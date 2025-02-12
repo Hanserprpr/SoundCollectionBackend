@@ -23,6 +23,8 @@ import com.iqiongzhi.SCB.cache.impl.AppRedisCacheManager;
 
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.time.Duration;
+
 @EnableCaching
 @Configuration
 public class RedisConfig {
@@ -44,7 +46,8 @@ public class RedisConfig {
         jedisPoolConfig.setMaxTotal(200); // 最大连接数
         jedisPoolConfig.setMaxIdle(10);  // 最大空闲连接
         jedisPoolConfig.setMinIdle(2);   // 最小空闲连接
-        jedisPoolConfig.setMaxWaitMillis(10000); // 连接等待时间
+        jedisPoolConfig.setBlockWhenExhausted(true); // 连接池耗尽时，是否等待可用连接
+        jedisPoolConfig.setMaxWait(Duration.ofMillis(10000)); // 设置最大等待时间
         return jedisPoolConfig;
     }
 

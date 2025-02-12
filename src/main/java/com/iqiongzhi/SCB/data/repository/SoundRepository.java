@@ -27,5 +27,8 @@ public interface SoundRepository extends ElasticsearchRepository<Sound, Integer>
 
     @NotNull Page<Sound> findAll(@NotNull Pageable pageable);
 
+    @Query("{\"multi_match\": {\"query\": \"?0\", \"fields\": [\"tags\"]}}")
+    Page<Sound> searchTags(String tag, Pageable pageable);
+
 
 }

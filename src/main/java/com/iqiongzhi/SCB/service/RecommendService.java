@@ -53,6 +53,18 @@ public class RecommendService {
         return ResponseUtil.build(Result.success(sounds, "获取成功"));
     }
 
+    public ResponseEntity<Result> getTagSound(String tag, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "HotScore"));
+
+        Page<Sound> soundPage = soundRepository.searchTags(tag, pageable);
+
+        List<Sound> sounds = soundPage.getContent();
+        if (sounds.isEmpty()) {
+            return ResponseUtil.build(Result.error(404, "暂无数据"));
+        }
+        return ResponseUtil.build(Result.success(sounds, "获取成功"));
+    }
+
 
     private List<Sound> getWeeklyHotSoundUtil() {
         Map<String, Integer> viewMap = redisService.hmgetAsIntegerMap("view");
