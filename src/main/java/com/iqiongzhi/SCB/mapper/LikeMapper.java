@@ -22,4 +22,7 @@ public interface LikeMapper {
 
     @Delete("delete from likes where user_id=#{userId} and sound_id=#{soundId}")
     int unlike(@Param("userId") String user_id, @Param("soundId")String sound_id);
+
+    @Select("SELECT COUNT(*) FROM likes WHERE user_id = #{userId} AND sound_id = #{soundId}")
+    boolean isLikinging(@Param("userId") String userId, @Param("soundId") String soundId);
 }

@@ -54,4 +54,9 @@ public class LikeService {
             return ResponseUtil.build(Result.error(400, "取消点赞失败qwq"));
         }
     }
+
+    public ResponseEntity<Result> isLiking(String userId,String soundId) {
+
+            return ResponseUtil.build(Result.success(likeMapper.isLikinging(userId,soundId), "获取点赞状态"));
+    }
 }
