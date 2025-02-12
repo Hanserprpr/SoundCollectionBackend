@@ -35,7 +35,6 @@ public class CollectionController {
         return collectionService.createCollection(userId, collection);
     }
 
-
     /**
      * 编辑收藏夹
      * @param collection 抽藏夹信息
@@ -72,4 +71,18 @@ public class CollectionController {
         String userId = (String) request.getAttribute("userId");
         return collectionService.addSound(Integer.parseInt(userId), collectionId, soundId);
     }
+
+    /**
+     * 从收藏夹中移除音频
+     * @param collectionId 收藏夹id
+     * @param soundId 音频id
+     * @return 移除结果
+     */
+    @Auth
+    @DeleteMapping("/removeSound")
+    public ResponseEntity<Result> removeSound(@RequestParam int collectionId, @RequestParam int soundId) {
+        String userId = (String) request.getAttribute("userId");
+        return collectionService.addSound(Integer.parseInt(userId), collectionId, soundId);
+    }
 }
+

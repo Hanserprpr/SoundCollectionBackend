@@ -162,5 +162,15 @@ public class CollectionService {
 
         return ResponseUtil.build(Result.ok());
     }
+
+    public ResponseEntity<Result> removeSound(int user_id, int collectionId, int soundId) {
+        String owner = collectionMapper.getOwner(collectionId);
+        if (user_id != Integer.parseInt(owner)) {
+            return ResponseUtil.build(Result.error(403, "无权限"));
+        }
+        collectionSoundsMapper.removeSound(collectionId, soundId);
+
+        return ResponseUtil.build(Result.ok());
+    }
 }
 

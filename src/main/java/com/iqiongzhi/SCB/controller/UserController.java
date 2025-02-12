@@ -87,7 +87,7 @@ public class UserController {
     }
 
     /**
-     * 获取自己的是否已经关注该主页的用户
+     * 获取是否已经关注该用户
      * @param id 主页用户id
      * @return 用户关注对象列表
      */
