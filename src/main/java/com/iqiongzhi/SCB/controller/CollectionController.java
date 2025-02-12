@@ -35,7 +35,6 @@ public class CollectionController {
         return collectionService.createCollection(userId, collection);
     }
 
-
     /**
      * 编辑收藏夹
      * @param collection 抽藏夹信息
