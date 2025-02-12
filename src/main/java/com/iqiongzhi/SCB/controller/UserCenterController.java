@@ -3,6 +3,7 @@ package com.iqiongzhi.SCB.controller;
 import com.iqiongzhi.SCB.annotation.Auth;
 import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.data.vo.Result;
+import com.iqiongzhi.SCB.service.CollectionService;
 import com.iqiongzhi.SCB.service.PrivacyService;
 import com.iqiongzhi.SCB.service.UserCenterService;
 
@@ -24,6 +25,8 @@ public class UserCenterController {
     private HttpServletRequest request;
     @Autowired
     PrivacyService privacyService;
+    @Autowired
+    CollectionService collectionService;
     /**
      * 获取用户信息
      * @return 用户信息
@@ -77,36 +80,56 @@ public class UserCenterController {
     }
 
     /**
-     * 获取用户的收藏
+     * 获取用户的收藏夹
+     * @param page 页码
+     * @param size 每页数量
+     * @return 用户收藏夹
+     */
+    @Auth
+    @GetMapping("/my_collections")
+    public ResponseEntity<Result> getMyCollections(@RequestParam int page,@RequestParam int size) {
+        String userId = (String) request.getAttribute("userId");
+        return collectionService.getCollection(userId,page,size);
+    }
+
+    /**
+     * 获取自己的收藏列表
+     * @param page 页码
+     * @param collection_id 收藏夹id
+     * @param size 每页数量
      * @return 用户收藏列表
      */
     @Auth
-    @GetMapping("/myCollections/{page}")
-    public ResponseEntity<Result> getMyCollections(@PathVariable int page) {
+    @GetMapping("/my_collectionSounds")
+    public ResponseEntity<Result> getMyCollectionSounds(@RequestParam int page,@RequestParam int collection_id,@RequestParam int size) {
         String userId = (String) request.getAttribute("userId");
-        return userCenterService.getMyCollections(userId,page,15);//默认size15
+        return collectionService.getCollectionSounds(userId,collection_id,page,size);
     }
 
     /**
-     * 获取用户的粉丝
-     * @return 用户粉丝列表
+     * 获取自己的粉丝
+     * @param page 页码
+     * @param size 每页数量
+     * @return 用户自己列表
      */
     @Auth
-    @GetMapping("/myFans/{page}")
-    public ResponseEntity<Result> getMyFans(@PathVariable int page) {
+    @GetMapping("/myFans")
+    public ResponseEntity<Result> getMyFans(@RequestParam int page,@RequestParam int size) {
         String userId = (String) request.getAttribute("userId");
-        return userCenterService.getMyFans(userId,page,15);//默认size15
+        return userCenterService.getMyFans(userId,page,size);
     }
 
     /**
-     * 获取用户的关注
-     * @return 用户关注对象列表
+     * 获取自己的关注
+     * @param page 页码
+     * @param size 每页数量
+     * @return 自己关注对象列表
      */
     @Auth
-    @GetMapping("/myFollows/{page}")
-    public ResponseEntity<Result> getMyFollows(@PathVariable int page) {
+    @GetMapping("/myFollows")
+    public ResponseEntity<Result> getMyFollows(@RequestParam int page,@RequestParam int size) {
         String userId = (String) request.getAttribute("userId");
-        return userCenterService.getMyFollows(userId,page,15);//默认size15
+        return userCenterService.getMyFollows(userId,page,size);
     }
     /**
      * 隐藏收藏夹

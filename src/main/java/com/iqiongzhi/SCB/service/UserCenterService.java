@@ -30,8 +30,7 @@ public class UserCenterService {
     private SoundUtils soundUtils;
     @Autowired
     private TagMapper tagMapper;
-    @Autowired
-    private CollectionMapper collectionMapper;
+
 
     /**
      * 获取用户信息
@@ -92,19 +91,6 @@ public class UserCenterService {
         return ResponseUtil.build(Result.success(soundUtils.addTags(sounds), "获取成功"));
     }
 
-    public ResponseEntity<Result> getMyCollections(String userId, int page, int size) {
-        try {
-            int offset = (page - 1) * size;
-            List<Integer> soundIds = collectionMapper.getCollectedSound(userId, offset, size);
-            if (soundIds.isEmpty()) {
-                return ResponseUtil.build(Result.error(404, "您还没有收藏QAQ"));
-            }
-            List<Sound> result = collectionMapper.getCollectedSoundList(soundIds);
-            return ResponseUtil.build(Result.success(result, "获取收藏成功"));
-        } catch (Exception e) {
-            return ResponseUtil.build(Result.error(400, "获取收藏失败" + e));
-        }
-    }
 
     public ResponseEntity<Result> getMyFans(String userId, int page, int size) {
         try {
