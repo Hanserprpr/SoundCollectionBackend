@@ -80,7 +80,7 @@ public class UserCenterController {
     }
 
     /**
-     * 获取用户的收藏夹
+     * 获取自己·的收藏夹
      * @param page 页码
      * @param size 每页数量
      * @return 用户收藏夹

@@ -82,7 +82,7 @@ public class CollectionController {
     @DeleteMapping("/removeSound")
     public ResponseEntity<Result> removeSound(@RequestParam int collectionId, @RequestParam int soundId) {
         String userId = (String) request.getAttribute("userId");
-        return collectionService.addSound(Integer.parseInt(userId), collectionId, soundId);
+        return collectionService.removeSound(Integer.parseInt(userId), collectionId, soundId);
     }
 }
 
