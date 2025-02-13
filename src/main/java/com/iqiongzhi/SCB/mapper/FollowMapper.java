@@ -23,7 +23,7 @@ public interface FollowMapper {
     @Select("select follower from follows where following=#{userId} LIMIT #{offset}, #{limit}")
     List<Integer> getFans(String userId, @Param("offset") int offset, @Param("limit") int limit);
 
-    @Select("select follower from follows where follower=#{userId} LIMIT #{offset}, #{limit}")
+    @Select("select following from follows where follower=#{userId} LIMIT #{offset}, #{limit}")
     List<Integer> getFollows(String userId, @Param("offset") int offset, @Param("limit") int limit);
 
     List<User> getFollowsList(@Param("list") List<Integer> follows);
