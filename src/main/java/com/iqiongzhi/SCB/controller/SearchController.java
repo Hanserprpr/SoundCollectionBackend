@@ -33,4 +33,12 @@ public class SearchController {
         String userId = (String) request.getAttribute("userId");
         return searchService.searchHistory(userId);
     }
+
+    @Auth
+    @GetMapping("/author")
+    public ResponseEntity<Result> searchAuthor(@RequestParam String keyword,
+                                               @RequestParam(defaultValue = "1") int page,
+                                               @RequestParam(defaultValue = "10") int size) {
+        return searchService.searchAuthor(keyword, page, size);
+    }
 }

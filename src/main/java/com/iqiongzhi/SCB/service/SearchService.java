@@ -52,4 +52,24 @@ public class SearchService {
     public ResponseEntity<Result> searchHistory(String userId) {
         return ResponseUtil.build(Result.success(searchMapper.getSearchHistory(userId), "获取成功"));
     }
+
+    /**
+     * 搜索作者
+     * @param keyword 关键词
+     * @param page 页码
+     * @param size 每页大小
+     * @return 搜索结果
+     */
+    public ResponseEntity<Result> searchAuthor(String keyword, int page, int size) {
+        // 确保 page 不会小于 0
+        page = Math.max(0, page - 1);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "hotScore"));
+        Page<Sound> soundPage = soundRepository.searchByUsernameContaining(keyword, pageable);
+        List<Sound> data = soundPage.getContent();
+        if (data.isEmpty()) {
+            return ResponseUtil.build(Result.error(404, "暂无数据"));
+        }
+        return ResponseUtil.build(Result.success(data, "获取成功"));
+    }
 }

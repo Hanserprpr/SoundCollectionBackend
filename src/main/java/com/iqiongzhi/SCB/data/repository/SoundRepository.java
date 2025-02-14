@@ -7,8 +7,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -31,4 +29,5 @@ public interface SoundRepository extends ElasticsearchRepository<Sound, Integer>
     Page<Sound> searchTags(String tag, Pageable pageable);
 
 
+    Page<Sound> searchByUsernameContaining(String keyword, Pageable pageable);
 }
