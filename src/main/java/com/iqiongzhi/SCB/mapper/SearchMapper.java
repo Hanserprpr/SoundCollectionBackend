@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface SearchMapper {
     @Insert("INSERT INTO search_logs (user_id, keyword)" +
-            "VALUES (#{user_id}, #{keyword})" +
+            "VALUES (#{userId}, #{keyword})" +
             "ON DUPLICATE KEY UPDATE searched_at = NOW();")
     void insertSearchLog(String userId, String keyword);
 
