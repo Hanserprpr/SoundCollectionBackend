@@ -83,6 +83,17 @@ public class SoundController {
     }
 
     /**
+     * 获取声音点赞数
+     * @param soundId 声音id
+     * @return 点赞数
+     */
+    @Auth
+    @GetMapping("/likes")
+    public ResponseEntity<Result> likes(@RequestParam String soundId) {
+        return likeService.likesCnt(soundId);
+    }
+
+    /**
      * 获取指定类型声音列表
      * @param category 类别
      * @param page 页码
