@@ -10,6 +10,9 @@ public interface CollectionSoundsMapper {
     @Insert("insert into collection_sounds (collection_id, sound_id) values (#{collectionId}, #{soundId})")
     void addSound(int collectionId, int soundId);
 
+    @Select("select count(*) from collection_sounds where sound_id=#{soundId}")
+    int collectionCnt(String soundId);
+
     @Delete("delete from collection_sounds where collection_id =#{collectionId} and sound_id=#{soundId}")
     void removeSound(int collectionId, int soundId);
 
