@@ -16,7 +16,14 @@ public interface CollectionSoundsMapper {
     @Delete("delete from collection_sounds where collection_id =#{collectionId} and sound_id=#{soundId}")
     void removeSound(int collectionId, int soundId);
 
-    @Select("select * from collection_sounds where collection_id = #{collectionId} LIMIT #{offset}, #{limit}")
+    @Select("""
+                select c.*, s.name as soundName,s.cover_url as soundCoverUrl
+                from collection_sounds as c
+                left join sound as s
+                on s.id=c.sound_id
+                where collection_id = #{collectionId}
+                LIMIT #{offset}, #{limit}
+            """)
     List<CollectionSounds> getCollectionById(int collectionId, @Param("offset") int offset, @Param("limit") int limit);
 }
 

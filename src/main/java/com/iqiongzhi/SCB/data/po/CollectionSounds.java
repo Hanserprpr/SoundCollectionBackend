@@ -17,4 +17,8 @@ public class CollectionSounds {
     private Integer soundId;
 
     private String addedAt;
+
+    private String soundName;
+
+    private String soundCoverUrl;
 }
