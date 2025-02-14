@@ -3,7 +3,7 @@
 
 <mapper namespace="com.iqiongzhi.SCB.mapper.FollowMapper">
     <select id="getFollowsList" parameterType="list" resultType="com.iqiongzhi.SCB.data.po.User">
-        SELECT username, avatar_url
+        SELECT id, username, avatar_url
         FROM user
         WHERE id IN
         <foreach item="id" collection="list" open="(" separator="," close=")">

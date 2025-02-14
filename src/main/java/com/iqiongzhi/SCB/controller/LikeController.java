@@ -23,23 +23,12 @@ public class LikeController {
      * @return 点赞结果
      */
     @Auth
-    @PostMapping("/addlike/{soundId}")
-    public ResponseEntity<Result> collect(@PathVariable String soundId) {
+    @PostMapping("/addlike")
+    public ResponseEntity<Result> collect(@RequestParam String soundId) {
         String userId = (String) request.getAttribute("userId");
         return likeService.like(userId, soundId);
     }
 
-
-    /**
-     * 获取声音点赞数
-     * @param soundId 声音id
-     * @return 点赞数
-     */
-    @Auth
-    @GetMapping("/likes/{soundId}")
-    public ResponseEntity<Result> likes(@PathVariable String soundId) {
-        return likeService.likesCnt(soundId);
-    }
 
     /**
      * 取消点赞
@@ -47,8 +36,8 @@ public class LikeController {
      * @return 删除结果
      */
     @Auth
-    @DeleteMapping("/dislike/{soundId}")
-    public ResponseEntity<Result> delete(@PathVariable String soundId) {
+    @DeleteMapping("/dislike")
+    public ResponseEntity<Result> delete(@RequestParam String soundId) {
         String userId = (String) request.getAttribute("userId");
         return likeService.dislike(userId, soundId);
     }

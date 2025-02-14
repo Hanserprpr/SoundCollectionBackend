@@ -23,8 +23,8 @@ public class FollowController {
      * @return 关注结果
      */
     @Auth
-    @PostMapping("/follow/{following}")
-    public ResponseEntity<Result> collect(@PathVariable String following) {
+    @PostMapping("/follow")
+    public ResponseEntity<Result> collect(@RequestParam String following) {
         String userId = (String) request.getAttribute("userId");
         return followService.follow(userId, following);
     }
@@ -36,8 +36,8 @@ public class FollowController {
      * @return 取消结果
      */
     @Auth
-    @DeleteMapping("/disfollow/{following}")
-    public ResponseEntity<Result> delete(@PathVariable String following) {
+    @DeleteMapping("/disfollow")
+    public ResponseEntity<Result> delete(@RequestParam String following) {
         String userId = (String) request.getAttribute("userId");
         return followService.disfollow(userId, following);
     }

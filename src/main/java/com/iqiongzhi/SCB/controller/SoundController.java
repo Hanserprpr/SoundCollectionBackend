@@ -3,6 +3,7 @@ package com.iqiongzhi.SCB.controller;
 import com.iqiongzhi.SCB.annotation.Auth;
 import com.iqiongzhi.SCB.data.po.Sound;
 import com.iqiongzhi.SCB.data.vo.Result;
+import com.iqiongzhi.SCB.service.CollectionService;
 import com.iqiongzhi.SCB.service.LikeService;
 import com.iqiongzhi.SCB.service.SoundService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,8 @@ public class SoundController {
     private SoundService soundService;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    private CollectionService collectionService;
 
     /**
      * 上传声音数据
@@ -80,6 +83,29 @@ public class SoundController {
     public ResponseEntity<Result> isLiking(@RequestParam String soundId) {
         String userId = (String) request.getAttribute("userId");
         return likeService.isLiking(userId,soundId);
+    }
+
+    /**
+     * 获取声音收藏数
+     * @param soundId 声音id
+     * @return 收藏数
+     */
+    @Auth
+    @GetMapping("/collections")
+    public ResponseEntity<Result> collections(@RequestParam String soundId) {
+        return collectionService.collectionsCnt(soundId);
+    }
+
+
+    /**
+     * 获取声音点赞数
+     * @param soundId 声音id
+     * @return 点赞数
+     */
+    @Auth
+    @GetMapping("/likes")
+    public ResponseEntity<Result> likes(@RequestParam String soundId) {
+        return likeService.likesCnt(soundId);
     }
 
     /**

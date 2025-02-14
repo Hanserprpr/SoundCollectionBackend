@@ -74,6 +74,7 @@ import com.iqiongzhi.SCB.mapper.PrivacyMapper;
 import com.iqiongzhi.SCB.utils.ResponseUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -145,6 +146,15 @@ public class CollectionService {
             }
         } catch (Exception e) {
             return ResponseUtil.build(Result.error(400, "获取收藏失败" + e));
+        }
+    }
+
+    public ResponseEntity<Result> collectionsCnt(String soundId) {
+        try {
+            int cnt = collectionSoundsMapper.collectionCnt(soundId);
+            return ResponseUtil.build(Result.success(cnt, "获取声音收藏数成功"));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseUtil.build(Result.error(404, "声音不存在"));
         }
     }
 
