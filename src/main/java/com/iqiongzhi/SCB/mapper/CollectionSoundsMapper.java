@@ -17,7 +17,7 @@ public interface CollectionSoundsMapper {
     void removeSound(int collectionId, int soundId);
 
     @Select("""
-                select c.*, s.name as soundName,s.cover_url as soundCoverUrl
+                select c.*, s.title as soundName,s.cover_url as soundCoverUrl
                 from collection_sounds as c
                 left join sound as s
                 on s.id=c.sound_id
