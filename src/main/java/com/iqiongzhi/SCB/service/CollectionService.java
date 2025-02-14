@@ -99,16 +99,11 @@ public class CollectionService {
     public ResponseEntity<Result> getCollection(String userId,int page,int size) {
         try {
             int offset = (page - 1) * size;
-            if(privacyMapper.getCollectionsPriById(userId)==1) {
-                List<Collection> result=collectionMapper.getCollection(userId,offset,size);
-                if (result.isEmpty()) {
-                    return ResponseUtil.build(Result.success(null, "TA还没有收藏QAQ"));
-                }
-                return ResponseUtil.build(Result.success(result, "获取收藏成功"));
+            List<Collection> result=collectionMapper.getCollection(userId,offset,size);
+            if (result.isEmpty()) {
+                return ResponseUtil.build(Result.success(null, "TA还没有收藏QAQ"));
             }
-            else{
-                return ResponseUtil.build(Result.success(null, "TA的收藏不可见"));
-            }
+            return ResponseUtil.build(Result.success(result, "获取收藏成功"));
         } catch (Exception e) {
             return ResponseUtil.build(Result.error(400, "获取收藏失败" + e));
         }
@@ -136,7 +131,8 @@ public class CollectionService {
 
     public ResponseEntity<Result> getCollectionSounds(String userId, int collectionId, int page, int size) {
         try {
-            if(privacyMapper.getCollectionsPriById(userId)==1) {
+            String owner = collectionMapper.getOwner(collectionId);
+            if(privacyMapper.getCollectionsPriById(userId)==1||Integer.parseInt(userId) == Integer.parseInt(owner)) {
                 int offset = (page - 1) * size;
                 List<CollectionSounds> result=collectionSoundsMapper.getCollectionById(collectionId,offset,size);
                 if (result.isEmpty()) {
