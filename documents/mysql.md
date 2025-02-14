@@ -279,6 +279,7 @@ CREATE TABLE comments_like (
 | **id**          | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 收藏夹的唯一ID       |
 | **user_id**     | `INT NOT NULL`               | 外键，关联用户表                         | 创建收藏夹的用户ID       |
 | **title**       | `VARCHAR(100) NOT NULL`      | 非空                                    | 收藏夹的标题             |
+| **cover_url**   | `VARCHAR(255)`               | 无特殊约束                               | 收藏夹的封面             |
 | **description** | `TEXT`                       | 无特殊约束                               | 收藏夹的描述信息          |
 | **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 收藏夹创建时间           |
 | **updated_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`  | 自动更新为当前时间 | 收藏夹最后一次信息更新时间  |
@@ -292,6 +293,7 @@ CREATE TABLE collections (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '收藏夹的唯一ID',
     user_id INT NOT NULL COMMENT '创建收藏夹的用户ID',
     title VARCHAR(100) NOT NULL COMMENT '收藏夹的标题',
+    cover_url VARCHAR(255) COMMENT '收藏夹的封面'
     description TEXT COMMENT '收藏夹的描述信息',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '收藏夹创建时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '收藏夹最后一次信息更新时间',
