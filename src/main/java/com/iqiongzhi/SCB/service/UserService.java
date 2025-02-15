@@ -45,7 +45,7 @@ public class UserService {
         boolean isFollow = followMapper.isFollowing(userId, id);
         List<Sound> soundList = soundMapper.getUserSounds(id);
         for (Sound sound : soundList) {
-            String SoundId = sound.getUserId();
+            String SoundId = String.valueOf(sound.getId());
             sound.setLikes(likeMapper.soundCnt(SoundId));
             sound.setComments(commentMapper.getCommentCount(SoundId));
         }
