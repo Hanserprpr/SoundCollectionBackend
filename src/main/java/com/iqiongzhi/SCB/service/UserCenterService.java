@@ -29,7 +29,9 @@ public class UserCenterService {
     @Autowired
     private SoundUtils soundUtils;
     @Autowired
-    private TagMapper tagMapper;
+    private LikeMapper likeMapper;
+    @Autowired
+    private CommentMapper commentMapper;
 
 
     /**
@@ -87,6 +89,11 @@ public class UserCenterService {
         List<Sound> sounds = soundMapper.getMySounds(userId);
         if (sounds.isEmpty()) {
             return ResponseUtil.build(Result.error(404, "您还没有上传声音"));
+        }
+        for (Sound sound : sounds) {
+            String SoundId = String.valueOf(sound.getId());
+            sound.setLikes(likeMapper.soundCnt(SoundId));
+            sound.setComments(commentMapper.getCommentCount(SoundId));
         }
         return ResponseUtil.build(Result.success(soundUtils.addTags(sounds), "获取成功"));
     }
