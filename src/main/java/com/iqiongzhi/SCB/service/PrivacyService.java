@@ -5,6 +5,7 @@ import com.iqiongzhi.SCB.mapper.PrivacyMapper;
 import com.iqiongzhi.SCB.utils.ResponseUtil;
 import com.iqiongzhi.SCB.data.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 public class PrivacyService {
     @Autowired
     private PrivacyMapper followMapper;
+    @Autowired
+    private PrivacyMapper privacyMapper;
 
     public ResponseEntity<Result> hideFollows(String userId) {
         if(followMapper.getFollowsPriById(userId)==1){
@@ -70,6 +73,36 @@ public class PrivacyService {
             return ResponseUtil.build(Result.ok());
         } else{
             return ResponseUtil.build(Result.error(400, "显示收藏夹失败qwq"));
+        }
+    }
+
+    public ResponseEntity<Result> getFollowsPri(String userId) {
+        try {
+                return ResponseUtil.build(Result.success(privacyMapper.getFollowsPriById(userId), "获取关注列表隐私设置1/0"));
+        }catch (DataIntegrityViolationException e) {
+            return ResponseUtil.build(Result.error(404, "用户不存在"));
+        }catch (Exception e) {
+            return ResponseUtil.build(Result.error(400, "获取失败"));
+        }
+    }
+
+    public ResponseEntity<Result> getFansPri(String userId) {
+        try {
+            return ResponseUtil.build(Result.success(privacyMapper.getFansPriById(userId), "获取粉丝列表隐私设置1/0"));
+        }catch (DataIntegrityViolationException e) {
+            return ResponseUtil.build(Result.error(404, "用户不存在"));
+        }catch (Exception e) {
+            return ResponseUtil.build(Result.error(400, "获取失败"));
+        }
+    }
+
+    public ResponseEntity<Result> getCollectionsPri(String userId) {
+        try {
+            return ResponseUtil.build(Result.success(privacyMapper.getCollectionsPriById(userId), "获取收藏列表隐私设置1/0"));
+        }catch (DataIntegrityViolationException e) {
+            return ResponseUtil.build(Result.error(404, "用户不存在"));
+        } catch (Exception e) {
+            return ResponseUtil.build(Result.error(400, "获取失败"));
         }
     }
 }
