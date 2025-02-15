@@ -194,8 +194,38 @@ public class UserCenterController {
         return privacyService.displayFans(userId);
     }
 
+    /**
+     * 获取粉丝列表隐私状态
+     * @return 隐私状态1/0
+     */
+    @Auth
+    @GetMapping("/privacy_fans")
+    public ResponseEntity<Result> getFansPri() {
+        String userId = (String) request.getAttribute("userId");
+        return privacyService.getFansPri(userId);
+    }
 
+    /**
+     * 获取关注列表隐私状态
+     * @return 隐私状态1/0
+     */
+    @Auth
+    @GetMapping("/privacy_follows")
+    public ResponseEntity<Result> getFollowsPri() {
+        String userId = (String) request.getAttribute("userId");
+        return privacyService.getFollowsPri(userId);
+    }
 
+    /**
+     * 获取收藏隐私状态
+     * @return 隐私状态1/0
+     */
+    @Auth
+    @GetMapping("/privacy_collections")
+    public ResponseEntity<Result> getCollectionsPri() {
+        String userId = (String) request.getAttribute("userId");
+        return privacyService.getCollectionsPri(userId);
+    }
 
 
 }
