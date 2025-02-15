@@ -4,15 +4,13 @@ import com.iqiongzhi.SCB.data.dto.UserProfileDTO;
 import com.iqiongzhi.SCB.data.po.Sound;
 import com.iqiongzhi.SCB.data.po.User;
 import com.iqiongzhi.SCB.data.vo.Result;
-import com.iqiongzhi.SCB.mapper.FollowMapper;
-import com.iqiongzhi.SCB.mapper.PrivacyMapper;
-import com.iqiongzhi.SCB.mapper.SoundMapper;
-import com.iqiongzhi.SCB.mapper.UserMapper;
+import com.iqiongzhi.SCB.mapper.*;
 import com.iqiongzhi.SCB.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,6 +24,10 @@ public class UserService {
     private PrivacyMapper privacyMapper;
     @Autowired
     private SoundMapper soundMapper;
+    @Autowired
+    private LikeMapper likeMapper;
+    @Autowired
+    private CommentMapper commentMapper;
 
     /**
      * 获取用户信息
@@ -42,6 +44,11 @@ public class UserService {
         int fans = followMapper.getFansCount(id);
         boolean isFollow = followMapper.isFollowing(userId, id);
         List<Sound> soundList = soundMapper.getUserSounds(id);
+        for (Sound sound : soundList) {
+            String SoundId = sound.getUserId();
+            sound.setLikes(likeMapper.soundCnt(SoundId));
+            sound.setComments(commentMapper.getCommentCount(SoundId));
+        }
         UserProfileDTO userProfileDTO = new UserProfileDTO(user, follow, fans, isFollow, soundList);
         return ResponseUtil.build(Result.success(userProfileDTO, "获取用户信息成功"));
     }

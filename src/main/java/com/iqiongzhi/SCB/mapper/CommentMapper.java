@@ -44,6 +44,9 @@ public interface CommentMapper {
             """)
     List<CommentDTO> getHotComments(@Param("soundId") String soundId, @Param("offset") int offset);
 
+    @Select("select count(*) from comments where sound_id=#{soundId}")
+    int getCommentCount(String soundId);
+
 
     @Update("update comments set likes = likes + 1 where id = #{commentId}")
     void likeCommentCount(String commentId);
