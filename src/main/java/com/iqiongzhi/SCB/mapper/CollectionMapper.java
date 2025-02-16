@@ -32,7 +32,7 @@ import java.util.List;
 
 @Mapper
 public interface CollectionMapper {
-    @Insert("insert into collections (user_id, title, cover_url, description) values (#{userId}, #{title},#{coverUrl} #{description})")
+    @Insert("insert into collections (user_id, title, cover_url, description) values (#{userId}, #{title},#{coverUrl}, #{description})")
     void createCollection(Collection collection);
 
     @Select("select * from collections where user_id = #{userId} LIMIT #{offset}, #{limit}")
