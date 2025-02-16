@@ -312,8 +312,8 @@ CREATE TABLE collections (
 | 字段名          | 数据类型                     | 约束                                    | 描述                   |
 |------------------|------------------------------|-----------------------------------------|------------------------|
 | **id**          | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 记录的唯一ID           |
-| **collection_id** | `INT NOT NULL`               | 外键，关联收藏夹表                     | 所属收藏夹的ID       |
-| **sound_id**    | `INT NOT NULL`               | 外键，关联声音表                         | 收藏夹中的声音ID         |
+| **collection_id** | `INT NOT NULL`               | 外键，关联收藏夹表， 与声音id唯一约束           | 所属收藏夹的ID       |
+| **sound_id**    | `INT NOT NULL`               | 外键，关联声音表，与收藏夹id唯一约束              | 收藏夹中的声音ID         |
 | **added_at**    | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 声音加入收藏夹的时间     |
 
 ---
@@ -327,7 +327,8 @@ CREATE TABLE collection_sounds (
     sound_id INT NOT NULL COMMENT '收藏夹中的声音ID',
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '声音加入收藏夹的时间',
     FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
-    FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE
+    FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE,
+    UNIQUE KEY (collection_id, sound_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏夹内容表';
 ```
 
@@ -375,8 +376,8 @@ CREATE TABLE playlists (
 | 字段名          | 数据类型                     | 约束                                    | 描述                   |
 |------------------|------------------------------|-----------------------------------------|------------------------|
 | **id**          | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 记录的唯一ID           |
-| **playlist_id** | `INT NOT NULL`               | 外键，关联声音合集表                     | 所属声音合集的ID       |
-| **sound_id**    | `INT NOT NULL`               | 外键，关联声音表                         | 合集中的声音ID         |
+| **playlist_id** | `INT NOT NULL`               | 外键，关联声音合集表，与声音id唯一约束       | 所属声音合集的ID       |
+| **sound_id**    | `INT NOT NULL`               | 外键，关联声音表，与合集id唯一约束            | 合集中的声音ID         |
 | **added_at**    | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 声音加入合集的时间     |
 
 ---
@@ -390,7 +391,8 @@ CREATE TABLE playlist_sounds (
     sound_id INT NOT NULL COMMENT '合集中的声音ID',
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '声音加入合集的时间',
     FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
-    FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE
+    FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE,
+    UNIQUE KEY (playlist_id, sound_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='声音合集内容表';
 ```
 
