@@ -79,7 +79,8 @@ public class CommentController {
     @GetMapping("/latest")
     public ResponseEntity<Result> latestComment(@RequestParam String soundId,
                                                 @RequestParam int page) {
-        return commentService.latestComment(soundId, page);
+        String userId = (String) request.getAttribute("userId");
+        return commentService.latestComment(soundId, page, userId);
     }
 
     /**
@@ -92,6 +93,7 @@ public class CommentController {
     @GetMapping("/hot")
     public ResponseEntity<Result> hotComment(@RequestParam String soundId,
                                              @RequestParam int page) {
-        return commentService.hotComment(soundId, page);
+        String userId = (String) request.getAttribute("userId");
+        return commentService.hotComment(soundId, page, userId);
     }
 }

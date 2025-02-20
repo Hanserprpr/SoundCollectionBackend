@@ -17,8 +17,13 @@ public class CommentDTO {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer commentId;
 
+    private String username;
+
+    private String avatarUrl;
+
     private String userId;
     private String content;
     private Timestamp createdAt;
     private int likes;
+    private boolean isLiked;
 }

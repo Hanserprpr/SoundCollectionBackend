@@ -86,9 +86,9 @@ public class CommentService {
      * @param soundId 声音id
      * @return 最新评论
      */
-    public ResponseEntity<Result> latestComment(String soundId, int page) {
+    public ResponseEntity<Result> latestComment(String soundId, int page, String userId) {
         int offset = (page - 1) * 15;
-        List<CommentDTO> data  = commentMapper.getLatestComments(soundId, offset);
+        List<CommentDTO> data  = commentMapper.getLatestComments(soundId, offset, userId);
         if (data.isEmpty()) {
             return ResponseUtil.build(Result.error(404, "没有评论"));
         }
@@ -101,9 +101,9 @@ public class CommentService {
      * @param page 页码
      * @return 热门评论
      */
-    public ResponseEntity<Result> hotComment(String soundId, int page) {
+    public ResponseEntity<Result> hotComment(String soundId, int page, String userId) {
         int offset = (page - 1) * 15;
-        List<CommentDTO> data = commentMapper.getHotComments(soundId, offset);
+        List<CommentDTO> data = commentMapper.getHotComments(soundId, offset, userId);
         if (data.isEmpty()) {
             return ResponseUtil.build(Result.error(404, "没有评论"));
         }

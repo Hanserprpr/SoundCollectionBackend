@@ -22,31 +22,40 @@ public interface CommentMapper {
 
     @Select("""
                 SELECT c.id AS commentId, c.sound_id, c.user_id, c.content, c.created_at,
-                       COALESCE(l.like_count, 0) AS likes
+                       COALESCE(l.like_count, 0) AS likes,
+                       u.username, u.avatar_url,
+                       IF(cl.user_id IS NOT NULL, true, false) AS isLiked
                 FROM comments c
                 LEFT JOIN (SELECT comment_id, COUNT(*) AS like_count FROM comments_like GROUP BY comment_id) l
                 ON c.id = l.comment_id
+                LEFT JOIN user u ON c.user_id = u.id
+                LEFT JOIN comments_like cl ON c.id = cl.comment_id AND cl.user_id = #{userId}
                 WHERE c.sound_id = #{soundId}
                 ORDER BY c.id DESC
                 LIMIT 15 OFFSET #{offset}
             """)
-    List<CommentDTO> getLatestComments(@Param("soundId") String soundId, @Param("offset") int offset);
+    List<CommentDTO> getLatestComments(@Param("soundId") String soundId, @Param("offset") int offset, @Param("userId") String userId);
+
 
     @Select("""
                 SELECT c.id AS commentId, c.sound_id, c.user_id, c.content, c.created_at,
-                       COALESCE(l.like_count, 0) AS likes
+                       COALESCE(l.like_count, 0) AS likes,
+                       u.username, u.avatar_url,
+                       CASE WHEN cl.user_id IS NOT NULL THEN true ELSE false END AS isLiked
                 FROM comments c
                 LEFT JOIN (SELECT comment_id, COUNT(*) AS like_count FROM comments_like GROUP BY comment_id) l
                 ON c.id = l.comment_id
+                LEFT JOIN user u ON c.user_id = u.id
+                LEFT JOIN comments_like cl ON c.id = cl.comment_id AND cl.user_id = #{userId}
                 WHERE c.sound_id = #{soundId}
-                ORDER BY likes DESC, c.created_at DESC
+                ORDER BY likes DESC, c.created_at DESC  -- 按点赞数降序排序
                 LIMIT 15 OFFSET #{offset}
             """)
-    List<CommentDTO> getHotComments(@Param("soundId") String soundId, @Param("offset") int offset);
+    List<CommentDTO> getHotComments(@Param("soundId") String soundId, @Param("offset") int offset, @Param("userId") String userId);
+
 
     @Select("select count(*) from comments where sound_id=#{soundId}")
     int getCommentCount(String soundId);
-
 
     @Update("update comments set likes = likes + 1 where id = #{commentId}")
     void likeCommentCount(String commentId);
