@@ -1,12 +1,9 @@
 package com.iqiongzhi.SCB.controller;
 
 import com.iqiongzhi.SCB.annotation.Auth;
-import com.iqiongzhi.SCB.data.po.Playlist;
 import com.iqiongzhi.SCB.data.vo.Result;
 import com.iqiongzhi.SCB.service.PlaylistService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,73 +22,48 @@ public class PlaylistController {
     }
 
     /**
-     * 创建播放列表
-     * @param playlist 播放列表信息
-     * @return 创建结果
-     */
-    @Auth
-    @PostMapping("/create")
-    public ResponseEntity<Result> createPlaylist(@Valid @RequestBody Playlist playlist) {
-        String userId = (String) request.getAttribute("userId");
-        return playlistService.createPlaylist(userId, playlist);
-    }
-
-    /**
-     * 获取播放列表
-     * @return 播放列表信息
-     */
-    @Auth
-    @GetMapping("/getPlaylist")
-    public ResponseEntity<Result> getPlaylist() {
-        String userId = (String) request.getAttribute("userId");
-        return playlistService.getPlaylist(userId);
-    }
-
-    /**
-     * 编辑播放列表
-     * @param playlist 播放列表信息
-     * @return 编辑结果
-     */
-    @Auth
-    @PostMapping("/edit")
-    public ResponseEntity<Result> editPlaylist(@Valid @RequestBody Playlist playlist) {
-        String userId = (String) request.getAttribute("userId");
-        return playlistService.editPlaylist(userId, playlist);
-    }
-
-    /**
-     * 删除播放列表
-     * @param playlistId 播放列表id
+     * 清空播放列表
      * @return 删除结果
      */
     @Auth
     @DeleteMapping("/del")
-    public ResponseEntity<Result> delPlaylist(@RequestParam String playlistId) {
+    public ResponseEntity<Result> delPlaylist() {
         String userId = (String) request.getAttribute("userId");
-        return playlistService.delPlaylist(userId, playlistId);
+        return playlistService.delPlaylist(userId);
     }
 
     /**
-     * 获取播放列表中的音频
-     * @param playlistId 播放列表id
+     * 获取播放列表
      * @return 音频信息
      */
     @Auth
     @GetMapping("/getPlaylistById")
-    public ResponseEntity<Result> getPlaylistById(@RequestParam String playlistId) {
-        return playlistService.getPlaylistById(playlistId);
+    public ResponseEntity<Result> getPlaylistById() {
+        String userId = (String) request.getAttribute("userId");
+        return playlistService.getPlaylistById(userId);
     }
 
     /**
      * 向播放列表中添加音频
-     * @param playlistId 播放列表id
      * @param soundId 音频id
      * @return 添加结果
      */
     @Auth
     @PostMapping("/addSound")
-    public ResponseEntity<Result> addSound(@RequestParam int playlistId, @RequestParam int soundId) {
+    public ResponseEntity<Result> addSound(@RequestParam int soundId) {
         String userId = (String) request.getAttribute("userId");
-        return playlistService.addSound(Integer.parseInt(userId), playlistId, soundId);
+        return playlistService.addSound(userId, soundId);
+    }
+
+    /**
+     * 从播放列表中删除音频
+     * @param soundId 音频id
+     * @return 删除结果
+     */
+    @Auth
+    @DeleteMapping("/delSound")
+    public ResponseEntity<Result> delSound(@RequestParam int soundId) {
+        String userId = (String) request.getAttribute("userId");
+        return playlistService.delSound(userId, soundId);
     }
 }

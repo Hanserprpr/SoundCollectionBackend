@@ -332,40 +332,7 @@ CREATE TABLE collection_sounds (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏夹内容表';
 ```
 
-## 声音合集表 (playlists)
-
-声音合集表用于存储用户创建的声音合集信息，包括合集标题和描述等。
-
----
-
-### 表结构
-
-| 字段名          | 数据类型                     | 约束                                    | 描述                   |
-|------------------|------------------------------|-----------------------------------------|------------------------|
-| **id**          | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 声音合集的唯一ID       |
-| **user_id**     | `INT NOT NULL`               | 外键，关联用户表                         | 创建合集的用户ID       |
-| **title**       | `VARCHAR(100) NOT NULL`      | 非空                                    | 合集的标题             |
-| **description** | `TEXT`                       | 无特殊约束                               | 合集的描述信息          |
-| **created_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 合集创建时间           |
-| **updated_at**  | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`  | 自动更新为当前时间 | 合集最后一次信息更新时间  |
-
----
-
-### 创建指令
-
-```sql
-CREATE TABLE playlists (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '声音合集的唯一ID',
-    user_id INT NOT NULL COMMENT '创建合集的用户ID',
-    title VARCHAR(100) NOT NULL COMMENT '合集的标题',
-    description TEXT COMMENT '合集的描述信息',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '合集创建时间',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '合集最后一次信息更新时间',
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='声音合集表';
-```
-
-## 声音合集内容表 (playlist_sounds)
+## 声音合集内容表 (playlists)
 
 声音合集内容表用于存储每个声音合集中的声音信息。
 
@@ -376,7 +343,7 @@ CREATE TABLE playlists (
 | 字段名          | 数据类型                     | 约束                                    | 描述                   |
 |------------------|------------------------------|-----------------------------------------|------------------------|
 | **id**          | `INT AUTO_INCREMENT PRIMARY KEY` | 主键，自动递增                           | 记录的唯一ID           |
-| **playlist_id** | `INT NOT NULL`               | 外键，关联声音合集表，与声音id唯一约束       | 所属声音合集的ID       |
+| **user_id**     | `INT NOT NULL`               | 外键，关联用户表                         | 创建合集的用户ID       |
 | **sound_id**    | `INT NOT NULL`               | 外键，关联声音表，与合集id唯一约束            | 合集中的声音ID         |
 | **added_at**    | `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` | 自动生成，默认当前时间                   | 声音加入合集的时间     |
 
@@ -385,14 +352,14 @@ CREATE TABLE playlists (
 ### 创建指令
 
 ```sql
-CREATE TABLE playlist_sounds (
+CREATE TABLE playlists (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '记录的唯一ID',
-    playlist_id INT NOT NULL COMMENT '所属声音合集的ID',
+    user_id INT NOT NULL COMMENT '创建合集的用户ID',
     sound_id INT NOT NULL COMMENT '合集中的声音ID',
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '声音加入合集的时间',
-    FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
+    UNIQUE KEY (user_id, sound_id),
     FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE,
-    UNIQUE KEY (playlist_id, sound_id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='声音合集内容表';
 ```
 
