@@ -32,15 +32,15 @@ public class CommentController {
 
     /**
      * 删除评论
-     *
-     * @param comment 评论
+     * @param commentId 评论
      * @return 删除结果
      */
     @Auth
     @PostMapping("/delete")
-    public ResponseEntity<Result> deleteComment(@RequestBody Comment comment) {
+    public ResponseEntity<Result> deleteComment(@RequestParam String commentId,
+                                                @RequestParam String soundId) {
         String userId = (String) request.getAttribute("userId");
-        return commentService.deleteComment(userId, comment);
+        return commentService.deleteComment(userId, commentId, soundId);
     }
 
     /**
@@ -76,6 +76,7 @@ public class CommentController {
      * @param page    页码
      * @return ResponseEntity<Result>
      */
+    @Auth
     @GetMapping("/latest")
     public ResponseEntity<Result> latestComment(@RequestParam String soundId,
                                                 @RequestParam int page) {
@@ -90,6 +91,7 @@ public class CommentController {
      * @param page    页码
      * @return ResponseEntity<Result>
      */
+    @Auth
     @GetMapping("/hot")
     public ResponseEntity<Result> hotComment(@RequestParam String soundId,
                                              @RequestParam int page) {

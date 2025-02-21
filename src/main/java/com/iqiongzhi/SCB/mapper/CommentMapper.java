@@ -14,7 +14,7 @@ public interface CommentMapper {
     @Insert("insert into comments_like (user_id, comment_id) values (#{userId}, #{commentId})")
     void likeComment(String userId, String commentId);
 
-    @Delete("delete from comments where id=#{id} and user_id=#{userId}")
+    @Delete("delete from comments where id=#{commentId} and user_id=#{userId}")
     void delComment(String commentId, String userId);
 
     @Delete("delete from comments_like where user_id=#{userId} and comment_id=#{commentId}")

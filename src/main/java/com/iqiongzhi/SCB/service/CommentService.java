@@ -32,20 +32,21 @@ public class CommentService {
         comment.setUserId(userId);
         commentMapper.addComment(comment);
         redis.hincr("comment", comment.getSoundId(), 1);
-        return ResponseUtil.build(Result.ok());
+        return ResponseUtil.build(Result.success(comment, "ok"));
     }
 
     /**
      * 删除评论
      *
      * @param userId  用户id
-     * @param comment 评论
+     * @param commentId 评论
      * @return 删除结果
      */
-    public ResponseEntity<Result> deleteComment(String userId, Comment comment) {
+    public ResponseEntity<Result> deleteComment(String userId, String commentId, String SoundId) {
         try {
-            commentMapper.delComment(comment.getCommentId(), userId);
-            redis.hdecr("comment", comment.getSoundId(), 1);
+            System.out.println("Deleting comment with commentId: " + commentId + " and userId: " + userId);
+            commentMapper.delComment(commentId, userId);
+            redis.hdecr("comment", SoundId, 1);
             return ResponseUtil.build(Result.ok());
         } catch (Exception e) {
             return ResponseUtil.build(Result.error(403, "无权限或评论不存在"));

@@ -107,7 +107,9 @@ public class RecommendService {
             topSoundIds.add(sound.getId());
         }
         List<Sound> topSounds = soundMapper.getSoundsByIds(topSoundIds);
-
+        for (Sound sound : topSounds) {
+            sound.setFileUrl(null);
+        }
         return soundUtils.addTagsAndUsername(topSounds);
     }
 
