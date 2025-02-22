@@ -8,8 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface CommentMapper {
-    @Insert("insert into comments (user_id, sound_id, content) values (#{userId}, #{soundId}, #{content})")
-    void addComment(Comment comment);
+        @Insert("insert into comments (user_id, sound_id, content) values (#{userId}, #{soundId}, #{content})")
+        @Options(useGeneratedKeys = true, keyProperty = "commentId")
+        void addComment(Comment comment);
 
     @Insert("insert into comments_like (user_id, comment_id) values (#{userId}, #{commentId})")
     void likeComment(String userId, String commentId);

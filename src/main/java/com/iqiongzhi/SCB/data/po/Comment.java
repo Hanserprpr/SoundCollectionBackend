@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @TableName("comments")
 public class Comment {
     @TableId(value = "id", type = IdType.AUTO)
-    private String commentId;
+    private Long commentId;
 
     private String userId;
     private String soundId;
